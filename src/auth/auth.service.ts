@@ -25,6 +25,7 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
     };
   }
+
   async getUserRoles(userId: string): Promise<string> {
     const user = await this.prisma.user.findUnique({
       where: { id: parseInt(userId) },
