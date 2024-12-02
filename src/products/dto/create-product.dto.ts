@@ -1,6 +1,4 @@
-
 export class CreateProductDto {
-
   name: string;
 
   price: number;
@@ -8,5 +6,4 @@ export class CreateProductDto {
   stock: number;
 
   category: string;
-
 }

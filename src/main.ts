@@ -11,12 +11,12 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   });
-  
+
   app.use(
     rateLimit({
       windowMs: 15 * 60 * 1000, // 15 minutos
-      max: 100 // límite de requests por windowMs
-    })
+      max: 100, // límite de requests por windowMs
+    }),
   );
 
   const config = new DocumentBuilder()
