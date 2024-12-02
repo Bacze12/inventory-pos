@@ -13,11 +13,12 @@ export class AuthService {
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (user && (await bcrypt.compare(password, user.password))) {
-      const { password: _password, ...result } = user; // Excluye 'password' explícitamente
+      const { password: _, ...result } = user; // 'password' queda ignorado explícitamente
       return result;
     }
     return null;
   }
+  
   
 
   async login(user: any) {
