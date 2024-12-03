@@ -1,4 +1,6 @@
 // prisma/seed.ts
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcrypt';
 async function main() {
     const adminUser = await prisma.user.upsert({
       where: { email: 'admin@example.com' },
@@ -20,3 +22,5 @@ async function main() {
     .finally(async () => {
       await prisma.$disconnect();
     });
+
+const prisma = new PrismaClient();
