@@ -16,26 +16,48 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Paso 1: Clonar el repositorio
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      # Paso 2: Configurar Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
+      # Paso 3: Instalar dependencias
       - name: Install Dependencies
         run: npm ci
+
+<<<<<<< HEAD
+      # Paso 4: Generar el cliente de Prisma
+      - name: Generate Prisma Client
+        run: npx prisma generate
+=======
 
       #- name: Lint Code
        # run: npm run lint
 
+>>>>>>> bf61740fb3602c59a90ec21cc12d0b25470ad850
+
+      # Paso 5: Configurar variables de entorno (por ejemplo, DATABASE_URL)
+      - name: Set Environment Variables
+        run: echo "Setting environment variables"
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      # Paso 6: Ejecutar las pruebas
       - name: Run Tests
         run: npm test
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
+      # Paso 7: Construir el proyecto
       - name: Build Project
         run: npm run build
 
+      # Paso 8: Desplegar a Render (Solo para Main)
       - name: Deploy to Render (Only for Main)
         if: github.ref == 'refs/heads/main'
         env:
