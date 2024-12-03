@@ -1,3 +1,4 @@
+
 name: CI/CD Pipeline
 
 on:
@@ -34,27 +35,29 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate
 
+      # Paso 5: Ejecutar migraciones
+      - name: Run Prisma Migrations
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-
-
-
-      # Paso 5: Configurar variables de entorno (por ejemplo, DATABASE_URL)
+      # Paso 6: Configurar variables de entorno
       - name: Set Environment Variables
         run: echo "Setting environment variables"
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      # Paso 6: Ejecutar las pruebas
+      # Paso 7: Ejecutar las pruebas
       - name: Run Tests
         run: npm test
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      # Paso 7: Construir el proyecto
+      # Paso 8: Construir el proyecto
       - name: Build Project
         run: npm run build
 
-      # Paso 8: Desplegar a Render (Solo para Main)
+      # Paso 9: Desplegar a Render (Solo para Main)
       - name: Deploy to Render (Only for Main)
         if: github.ref == 'refs/heads/main'
         env:
