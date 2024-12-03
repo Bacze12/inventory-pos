@@ -30,16 +30,13 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-<<<<<<< HEAD
       # Paso 4: Generar el cliente de Prisma
       - name: Generate Prisma Client
         run: npx prisma generate
-=======
 
-      #- name: Lint Code
-       # run: npm run lint
 
->>>>>>> bf61740fb3602c59a90ec21cc12d0b25470ad850
+
+
 
       # Paso 5: Configurar variables de entorno (por ejemplo, DATABASE_URL)
       - name: Set Environment Variables
