@@ -40,6 +40,7 @@
   "devDependencies": {
     "@nestjs/cli": "^10.4.8",
     "@nestjs/schematics": "^10.0.0",
+     "prisma": "^6.0.1",
     "@nestjs/testing": "^10.0.0",
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.0",
@@ -79,5 +80,11 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  }
+  },
+  
+    "engines": {
+      "node": ">=18.0.0",
+      "npm": ">=8.0.0"
+    }
+  
 }
