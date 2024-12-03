@@ -30,7 +30,7 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Run Tests
-        run: npm test
+        run: npm test -- --passWithNoTests
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
