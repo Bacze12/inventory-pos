@@ -6,6 +6,12 @@ import rateLimit from 'express-rate-limit';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Habillitar confianza en proxies
+  app.use((req, res, next) => {
+    req.app.set('trust proxy', 1);  //1 para confiar en el primer proxy
+    next();
+  });
+
   app.enableCors({
     origin: process.env.FRONTEND_URL,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
