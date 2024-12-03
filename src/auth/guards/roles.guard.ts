@@ -4,7 +4,7 @@ import { ROLES_KEY } from "../../common/decorators/roles.decorator";
 import { Role } from "../../constants/roles";
 import { AuthService } from "../../auth/auth.service";
 import { PrismaService } from "prisma/prisma.service";
-import { CreateSaleDto } from "src/products/dto/create-sale.dto";
+import { CreateSaleDto } from "src/sales/dto/create-sale.dto";
 
 // sales/sales.service.ts
 @Injectable()
