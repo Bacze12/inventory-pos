@@ -1,16 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import rateLimit from 'express-rate-limit';
+// import { rateLimitMiddleware } from './middleware/rate-limit.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Habillitar confianza en proxies
-  app.use((req, res, next) => {
-    req.app.set('trust proxy', 1);  //1 para confiar en el primer proxy
-    next();
-  });
+  app.getHttpAdapter().getInstance().set('trust proxy', 1);
 
   app.enableCors({
     origin: process.env.FRONTEND_URL,
@@ -18,12 +15,9 @@ async function bootstrap() {
     credentials: true,
   });
   
-  app.use(
-    rateLimit({
-      windowMs: 15 * 60 * 1000, // 15 minutos
-      max: 100 // límite de requests por windowMs
-    })
-  );
+  // Middleware de rate limiting
+  // app.use(rateLimitMiddleware);
+
 
   const config = new DocumentBuilder()
     .setTitle('Inventory POS API')
