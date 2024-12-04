@@ -6,7 +6,7 @@ import { dynamicRateLimitMiddleware } from './middleware/rate-limit.middleware';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Habillitar confianza en proxies
+  // Enable trust proxy
   app.getHttpAdapter().getInstance().set('trust proxy', 1);
 
   app.enableCors({
@@ -15,14 +15,14 @@ async function bootstrap() {
     credentials: true,
   });
   
-  // Middleware de rate limiting
+  // Middleware for rate limiting
   app.use(dynamicRateLimitMiddleware);
   app.use((req, res, next) => {
     console.log(`Request received: ${req.method} ${req.url}`);
     next();
   });
 
-
+  // Swagger configuration for API documentation
   const config = new DocumentBuilder()
     .setTitle('Inventory POS API')
     .setDescription('API Documentation')

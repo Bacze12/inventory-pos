@@ -10,6 +10,13 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
+  /**
+   * Validates a user by email and password.
+   * 
+   * @param email - The email of the user.
+   * @param password - The password of the user.
+   * @returns The user object without the password if validation is successful, otherwise null.
+   */
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (user && await bcrypt.compare(password, user.password)) {
@@ -19,6 +26,12 @@ export class AuthService {
     return null;
   }
 
+  /**
+   * Logs in a user and returns a JWT access token.
+   * 
+   * @param user - The user object.
+   * @returns An object containing the access token.
+   */
   async login(user: any) {
     const payload = { email: user.email, sub: user.id };
     return {
@@ -26,6 +39,12 @@ export class AuthService {
     };
   }
 
+  /**
+   * Retrieves the roles of a user by user ID.
+   * 
+   * @param userId - The ID of the user.
+   * @returns The role of the user.
+   */
   async getUserRoles(userId: string): Promise<string> {
     const user = await this.prisma.user.findUnique({
       where: { id: parseInt(userId) },
