@@ -118,3 +118,87 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+## Detailed Documentation
+
+### Project Overview
+
+This project is an Inventory Point of Sale (POS) system built using the NestJS framework. It provides a comprehensive solution for managing products, sales, and user authentication. The system is designed to be scalable, maintainable, and easy to use.
+
+### Key Components
+
+1. **Products**: Manage product information including name, price, and inventory.
+2. **Sales**: Handle sales transactions, including creating and retrieving sales records.
+3. **Authentication**: Secure the application with JWT-based authentication and role-based access control.
+
+### Getting Started
+
+To get started with this project, follow these steps:
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/Bacze12/inventory-pos.git
+   cd inventory-pos
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Set up the database**:
+   - Ensure you have a PostgreSQL database running.
+   - Create a `.env` file in the root directory and add your database connection string:
+     ```
+     DATABASE_URL=postgresql://username:password@localhost:5432/database_name
+     ```
+
+4. **Run database migrations**:
+   ```bash
+   npx prisma migrate dev
+   ```
+
+5. **Generate Prisma client**:
+   ```bash
+   npx prisma generate
+   ```
+
+6. **Start the application**:
+   ```bash
+   npm run start:dev
+   ```
+
+### API Documentation
+
+The API documentation is available at `/api` when the application is running. It provides detailed information about the available endpoints, request/response formats, and authentication requirements.
+
+### Running Tests
+
+To run the tests, use the following commands:
+
+- **Unit tests**:
+  ```bash
+  npm run test
+  ```
+
+- **End-to-end (e2e) tests**:
+  ```bash
+  npm run test:e2e
+  ```
+
+- **Test coverage**:
+  ```bash
+  npm run test:cov
+  ```
+
+### Continuous Integration (CI)
+
+This project includes a CI pipeline configured with GitHub Actions. The pipeline runs tests, lints the code, and builds the project on every push to the `main` branch. The CI configuration is located in the `.github/workflows/ci.yml` file.
+
+### Contributing
+
+We welcome contributions from the community! If you'd like to contribute to this project, please follow the guidelines in the `CONTRIBUTING.md` file.
+
+### License
+
+This project is licensed under the MIT License. See the `LICENSE` file for more details.
