@@ -9,7 +9,7 @@ export class AppController {
    * @returns {string} A greeting message.
    */
   @Get()
-  getHello(): string {
+  public getHello(): string {
     return 'Hello World!';
   }
 }

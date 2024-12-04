@@ -18,7 +18,7 @@ export class RolesGuard implements CanActivate {
    * @param context - The execution context of the request.
    * @returns {Promise<boolean>} - True if the user has the required roles, otherwise false.
    */
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  public async canActivate(context: ExecutionContext): Promise<boolean> {
     const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
