@@ -22,3 +22,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Initial release of the project
+
+## [1.1.0] - 2023-10-15
+
+### Changed
+- Updated CI pipeline configuration in `.github/workflows/ci.yml` to include steps for testing and code quality checks.
