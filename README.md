@@ -26,6 +26,18 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Purpose
+
+This project is a starter repository for building efficient and scalable server-side applications using the NestJS framework. It provides a solid foundation for developing modern web applications with TypeScript.
+
+## Features
+
+- Modular architecture for easy scalability and maintainability
+- Dependency injection for managing application components
+- Built-in support for TypeScript
+- Powerful CLI for project generation and management
+- Extensive documentation and community support
+
 ## Project setup
 
 ```bash
@@ -70,6 +82,15 @@ $ mau deploy
 ```
 
 With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+
+## Contributing
+
+We welcome contributions from the community! If you'd like to contribute to this project, please follow these guidelines:
+
+1. Fork the repository and create a new branch for your feature or bug fix.
+2. Write clear and concise commit messages.
+3. Ensure your code follows the project's coding standards and passes all tests.
+4. Submit a pull request with a detailed description of your changes.
 
 ## Resources
 

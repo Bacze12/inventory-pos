@@ -3,32 +3,21 @@ import { Reflector } from "@nestjs/core";
 import { ROLES_KEY } from "../../common/decorators/roles.decorator";
 import { Role } from "../../constants/roles";
 import { AuthService } from "../../auth/auth.service";
-import { PrismaService } from "prisma/prisma.service";
-import { CreateSaleDto } from "src/sales/dto/create-sale.dto";
 
-// sales/sales.service.ts
-@Injectable()
-export class SalesService {
-  constructor(private prisma: PrismaService) {}
-
-  async createSale(createSaleDto: CreateSaleDto) {
-    const total = createSaleDto.items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
-    return this.prisma.sale.create({
-      data: {
-        ...createSaleDto,
-        total,
-        items: {
-          create: createSaleDto.items
-        },
-      },
-    });
-  }
-}
-
+/**
+ * Guard to handle role-based access control.
+ * This guard checks if the user has the required roles to access a route.
+ */
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector, private authService: AuthService) {}
 
+  /**
+   * Determines if the current user has the required roles to access the route.
+   * 
+   * @param context - The execution context of the request.
+   * @returns {Promise<boolean>} - True if the user has the required roles, otherwise false.
+   */
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
       context.getHandler(),
@@ -42,4 +31,3 @@ export class RolesGuard implements CanActivate {
     return requiredRoles.some((role) => userRoles.includes(role));
   }
 }
-

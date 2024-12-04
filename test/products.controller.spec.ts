@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProductsController } from '../src/products/products.controller';
 import { ProductsService } from '../src/products/products.service';
+import { CreateProductDto } from '../src/products/dto/create-product.dto';
+import { UpdateProductDto } from '../src/products/dto/update-product.dto';
 
 describe('ProductsController', () => {
   let controller: ProductsController;
@@ -32,8 +34,32 @@ describe('ProductsController', () => {
   });
 
   it('should call ProductsService.create with correct parameters', async () => {
-    const dto = { name: 'Test Product', price: 100 };
+    const dto: CreateProductDto = { name: 'Test Product', price: 100 };
     await controller.create(dto);
     expect(service.create).toHaveBeenCalledWith(dto);
+  });
+
+  it('should call ProductsService.findAll', async () => {
+    await controller.findAll();
+    expect(service.findAll).toHaveBeenCalled();
+  });
+
+  it('should call ProductsService.findOne with correct parameters', async () => {
+    const id = '1';
+    await controller.findOne(id);
+    expect(service.findOne).toHaveBeenCalledWith(+id);
+  });
+
+  it('should call ProductsService.update with correct parameters', async () => {
+    const id = '1';
+    const dto: UpdateProductDto = { name: 'Updated Product', price: 200 };
+    await controller.update(id, dto);
+    expect(service.update).toHaveBeenCalledWith(+id, dto);
+  });
+
+  it('should call ProductsService.remove with correct parameters', async () => {
+    const id = '1';
+    await controller.remove(id);
+    expect(service.remove).toHaveBeenCalledWith(+id);
   });
 });

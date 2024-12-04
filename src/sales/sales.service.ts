@@ -6,6 +6,12 @@ import { CreateSaleDto } from './dto/create-sale.dto';
 export class SalesService {
   constructor(private readonly prisma: PrismaService) {}
 
+  /**
+   * Creates a new sale.
+   * 
+   * @param createSaleDto - The data transfer object containing sale details.
+   * @returns The created sale.
+   */
   async createSale(createSaleDto: CreateSaleDto) {
     const total = createSaleDto.items.reduce((sum, item) => sum + item.quantity * item.price, 0);
 
@@ -19,6 +25,11 @@ export class SalesService {
     });
   }
 
+  /**
+   * Retrieves all sales.
+   * 
+   * @returns An array of all sales.
+   */
   async findAll() {
     return this.prisma.sale.findMany({
       include: {
@@ -27,6 +38,12 @@ export class SalesService {
     });
   }
 
+  /**
+   * Retrieves a single sale by ID.
+   * 
+   * @param id - The ID of the sale.
+   * @returns The sale with the specified ID.
+   */
   async findOne(id: number) {
     return this.prisma.sale.findUnique({
       where: { id },
