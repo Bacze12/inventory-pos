@@ -17,7 +17,7 @@ export class AuthService {
    * @param password - The password of the user.
    * @returns The user object without the password if validation is successful, otherwise null.
    */
-  async validateUser(email: string, password: string): Promise<any> {
+  public async validateUser(email: string, password: string): Promise<any> {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (user && await bcrypt.compare(password, user.password)) {
       const { password, ...result } = user;
@@ -32,7 +32,7 @@ export class AuthService {
    * @param user - The user object.
    * @returns An object containing the access token.
    */
-  async login(user: any) {
+  public async login(user: any) {
     const payload = { email: user.email, sub: user.id };
     return {
       access_token: this.jwtService.sign(payload),
@@ -45,7 +45,7 @@ export class AuthService {
    * @param userId - The ID of the user.
    * @returns The role of the user.
    */
-  async getUserRoles(userId: string): Promise<string> {
+  public async getUserRoles(userId: string): Promise<string> {
     const user = await this.prisma.user.findUnique({
       where: { id: parseInt(userId) },
     });

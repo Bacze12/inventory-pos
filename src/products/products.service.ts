@@ -13,7 +13,7 @@ export class ProductsService {
    * @param createProductDto - The data transfer object containing product details.
    * @returns The created product.
    */
-  async create(createProductDto: CreateProductDto) {
+  public async create(createProductDto: CreateProductDto) {
     return this.prisma.product.create({ data: createProductDto });
   }
 
@@ -22,7 +22,7 @@ export class ProductsService {
    * 
    * @returns An array of all products.
    */
-  async findAll() {
+  public async findAll() {
     return this.prisma.product.findMany();
   }
 
@@ -32,7 +32,7 @@ export class ProductsService {
    * @param id - The ID of the product.
    * @returns The product with the specified ID.
    */
-  async findOne(id: number) {
+  public async findOne(id: number) {
     return this.prisma.product.findUnique({ where: { id } });
   }
 
@@ -43,7 +43,7 @@ export class ProductsService {
    * @param updateProductDto - The data transfer object containing updated product details.
    * @returns The updated product.
    */
-  async update(id: number, updateProductDto: UpdateProductDto) {
+  public async update(id: number, updateProductDto: UpdateProductDto) {
     return this.prisma.product.update({
       where: { id },
       data: updateProductDto,
@@ -56,7 +56,7 @@ export class ProductsService {
    * @param id - The ID of the product to delete.
    * @returns The deleted product.
    */
-  async remove(id: number) {
+  public async remove(id: number) {
     return this.prisma.product.delete({ where: { id } });
   }
 }

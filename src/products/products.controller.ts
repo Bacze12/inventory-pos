@@ -22,7 +22,7 @@ export class ProductsController {
   @Post()
   @ApiOperation({ summary: 'Create a new product' })
   @ApiResponse({ status: 201, description: 'Product created successfully' })
-  async create(@Body() createProductDto: CreateProductDto) {
+  public async create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
   }
 
@@ -33,7 +33,7 @@ export class ProductsController {
    */
   @Get()
   @ApiOperation({ summary: 'Retrieve all products' })
-  async findAll() {
+  public async findAll() {
     return this.productsService.findAll();
   }
 
@@ -45,7 +45,7 @@ export class ProductsController {
    */
   @Get(':id')
   @ApiOperation({ summary: 'Retrieve a single product by ID' })
-  async findOne(@Param('id') id: string) {
+  public async findOne(@Param('id') id: string) {
     return this.productsService.findOne(+id);
   }
 
@@ -58,7 +58,7 @@ export class ProductsController {
    */
   @Patch(':id')
   @ApiOperation({ summary: 'Update a product' })
-  async update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
+  public async update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     return this.productsService.update(+id, updateProductDto);
   }
 
@@ -70,7 +70,7 @@ export class ProductsController {
    */
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a product' })
-  async remove(@Param('id') id: string) {
+  public async remove(@Param('id') id: string) {
     return this.productsService.remove(+id);
   }
 }

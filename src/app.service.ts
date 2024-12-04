@@ -7,7 +7,7 @@ export class AppService {
    * 
    * @returns {string} A greeting message.
    */
-  getHello(): string {
+  public getHello(): string {
     return 'Hello World!';
   }
 }

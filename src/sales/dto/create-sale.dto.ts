@@ -3,5 +3,5 @@ import { SaleItemDto } from './sale-item.dto';
 
 export class CreateSaleDto {
   @ApiProperty({ description: 'Lista de productos vendidos' })
-  items: SaleItemDto[];
+  public items: SaleItemDto[];
 }

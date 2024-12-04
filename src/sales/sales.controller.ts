@@ -21,7 +21,7 @@ export class SalesController {
   @Post()
   @ApiOperation({ summary: 'Create a new sale' })
   @ApiResponse({ status: 201, description: 'Sale created successfully' })
-  async create(@Body() createSaleDto: CreateSaleDto) {
+  public async create(@Body() createSaleDto: CreateSaleDto) {
     return this.salesService.createSale(createSaleDto);
   }
 
@@ -32,7 +32,7 @@ export class SalesController {
    */
   @Get()
   @ApiOperation({ summary: 'Retrieve all sales' })
-  async findAll() {
+  public async findAll() {
     return this.salesService.findAll();
   }
 
@@ -44,7 +44,7 @@ export class SalesController {
    */
   @Get(':id')
   @ApiOperation({ summary: 'Retrieve a sale by ID' })
-  async findOne(@Param('id') id: string) {
+  public async findOne(@Param('id') id: string) {
     return this.salesService.findOne(+id);
   }
 }
