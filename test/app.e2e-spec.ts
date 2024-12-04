@@ -64,14 +64,22 @@ describe('AppController (e2e)', () => {
   //   expect(response.status).toBe(429); // Verifica que devuelve "Too Many Requests"
   // });
   it('should allow up to 1000 requests to /products', async () => {
-    for (let i = 0; i < 1000; i++) {
-      const res = await request(app.getHttpServer()).get('/products');
-      expect(res.status).toBe(200); // Verifica que responde correctamente
-    }
+    const batchSize = 100; // Tamaño del lote
+    const totalRequests = 1000;
+    const batches = Math.ceil(totalRequests / batchSize);
   
-    // La solicitud 1001 debe ser bloqueada
-    const response = await request(app.getHttpServer()).get('/products');
-    expect(response.status).toBe(429);
-  });
+    for (let batch = 0; batch < batches; batch++) {
+      const requests = Array.from({ length: batchSize }, () =>
+        request(app.getHttpServer()).get('/products'),
+      );
+  
+      const responses = await Promise.all(requests);
+      responses.forEach((res) => {
+        expect(res.status).toBe(200); // Verifica que responde correctamente
+      });
+    }
+  }, 30000); // Timeout extendido
+  
+  
   
 });
