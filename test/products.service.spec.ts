@@ -68,7 +68,9 @@ describe('ProductsService', () => {
   it('should return the created product', async () => {
     const dto: CreateProductDto = { name: 'Test Product', price: 100 };
 
+
     const result = { id: 1, ...dto, createdAt: new Date() };
+
 
     jest.spyOn(prisma.product, 'create').mockResolvedValue(result);
     expect(await service.create(dto)).toBe(result);
@@ -76,7 +78,9 @@ describe('ProductsService', () => {
 
   it('should return all products', async () => {
 
+
     const result = [{ id: 1, name: 'Test Product', price: 100, createdAt: new Date() }];
+
 
     jest.spyOn(prisma.product, 'findMany').mockResolvedValue(result);
     expect(await service.findAll()).toBe(result);
@@ -85,7 +89,9 @@ describe('ProductsService', () => {
   it('should return a single product by ID', async () => {
     const id = 1;
 
+
     const result = { id: 1, name: 'Test Product', price: 100, createdAt: new Date() };
+
 
     jest.spyOn(prisma.product, 'findUnique').mockResolvedValue(result);
     expect(await service.findOne(id)).toBe(result);
@@ -95,7 +101,9 @@ describe('ProductsService', () => {
     const id = 1;
     const dto: UpdateProductDto = { name: 'Updated Product', price: 200 };
 
+
     const result = { id: 1, ...dto, createdAt: new Date() };
+
 
     jest.spyOn(prisma.product, 'update').mockResolvedValue(result);
     expect(await service.update(id, dto)).toBe(result);
@@ -104,7 +112,9 @@ describe('ProductsService', () => {
   it('should return the removed product', async () => {
     const id = 1;
 
+
     const result = { id: 1, name: 'Test Product', price: 100, createdAt: new Date() };
+
 
     jest.spyOn(prisma.product, 'delete').mockResolvedValue(result);
     expect(await service.remove(id)).toBe(result);
