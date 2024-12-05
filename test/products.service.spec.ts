@@ -64,4 +64,39 @@ describe('ProductsService', () => {
     await service.remove(id);
     expect(prisma.product.delete).toHaveBeenCalledWith({ where: { id } });
   });
+
+  it('should return the created product', async () => {
+    const dto: CreateProductDto = { name: 'Test Product', price: 100 };
+    const result = { id: 1, ...dto, createdAt: new Date() };
+    jest.spyOn(prisma.product, 'create').mockResolvedValue(result);
+    expect(await service.create(dto)).toBe(result);
+  });
+
+  it('should return all products', async () => {
+    const result = [{ id: 1, name: 'Test Product', price: 100, createdAt: new Date() }];
+    jest.spyOn(prisma.product, 'findMany').mockResolvedValue(result);
+    expect(await service.findAll()).toBe(result);
+  });
+
+  it('should return a single product by ID', async () => {
+    const id = 1;
+    const result = { id: 1, name: 'Test Product', price: 100, createdAt: new Date() };
+    jest.spyOn(prisma.product, 'findUnique').mockResolvedValue(result);
+    expect(await service.findOne(id)).toBe(result);
+  });
+
+  it('should return the updated product', async () => {
+    const id = 1;
+    const dto: UpdateProductDto = { name: 'Updated Product', price: 200 };
+    const result = { id: 1, ...dto, createdAt: new Date() };
+    jest.spyOn(prisma.product, 'update').mockResolvedValue(result);
+    expect(await service.update(id, dto)).toBe(result);
+  });
+
+  it('should return the removed product', async () => {
+    const id = 1;
+    const result = { id: 1, name: 'Test Product', price: 100, createdAt: new Date() };
+    jest.spyOn(prisma.product, 'delete').mockResolvedValue(result);
+    expect(await service.remove(id)).toBe(result);
+  });
 });
