@@ -65,20 +65,30 @@ describe('ProductsController', () => {
 
   it('should return the created product', async () => {
     const dto: CreateProductDto = { name: 'Test Product', price: 100 };
-    const result = { id: 1, ...dto };
+
+    const result = { id: 1, ...dto, createdAt: new Date() };
+    
     jest.spyOn(service, 'create').mockResolvedValue(result);
     expect(await controller.create(dto)).toBe(result);
   });
 
   it('should return all products', async () => {
-    const result = [{ id: 1, name: 'Test Product', price: 100 }];
+
+    const result = [{ id: 1, name: 'Test Product', price: 100, createdAt: new Date() }];
+
+    
+
     jest.spyOn(service, 'findAll').mockResolvedValue(result);
     expect(await controller.findAll()).toBe(result);
   });
 
   it('should return a single product by ID', async () => {
     const id = '1';
-    const result = { id: 1, name: 'Test Product', price: 100 };
+
+    const result = { id: 1, name: 'Test Product', price: 100, createdAt: new Date() };
+
+    
+
     jest.spyOn(service, 'findOne').mockResolvedValue(result);
     expect(await controller.findOne(id)).toBe(result);
   });
@@ -86,14 +96,18 @@ describe('ProductsController', () => {
   it('should return the updated product', async () => {
     const id = '1';
     const dto: UpdateProductDto = { name: 'Updated Product', price: 200 };
-    const result = { id: 1, ...dto };
+
+    const result = { id: 1, ...dto, createdAt: new Date() };
+
     jest.spyOn(service, 'update').mockResolvedValue(result);
     expect(await controller.update(id, dto)).toBe(result);
   });
 
   it('should return the removed product', async () => {
     const id = '1';
-    const result = { id: 1, name: 'Test Product', price: 100 };
+
+    const result = { id: 1, name: 'Test Product', price: 100, createdAt: new Date() };
+
     jest.spyOn(service, 'remove').mockResolvedValue(result);
     expect(await controller.remove(id)).toBe(result);
   });
