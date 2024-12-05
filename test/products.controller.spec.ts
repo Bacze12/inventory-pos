@@ -34,7 +34,7 @@ describe('ProductsController', () => {
   });
 
   it('should call ProductsService.create with correct parameters', async () => {
-    const dto: CreateProductDto = { name: 'Test Product', price: 100 };
+    const dto: CreateProductDto = { id: 1, name: 'Test Product', price: 100, createdAt: new Date() };
     await controller.create(dto);
     expect(service.create).toHaveBeenCalledWith(dto);
   });
@@ -64,7 +64,7 @@ describe('ProductsController', () => {
   });
 
   it('should return the created product', async () => {
-    const dto: CreateProductDto = { name: 'Test Product', price: 100 };
+    const dto: CreateProductDto = { id: 1, name: 'Test Product', price: 100, createdAt: new Date() };
     const result = { id: 1, ...dto, createdAt: new Date() };
     jest.spyOn(service, 'create').mockResolvedValue(result);
     expect(await controller.create(dto)).toBe(result);
