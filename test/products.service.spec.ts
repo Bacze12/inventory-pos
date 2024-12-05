@@ -36,7 +36,7 @@ describe('ProductsService', () => {
   });
 
   it('should call PrismaService.product.create', async () => {
-    const dto: CreateProductDto = { name: 'Test Product', price: 100 };
+    const dto: CreateProductDto = { id: 1, name: 'Test Product', price: 100, createdAt: new Date() };
     await service.create(dto);
     expect(prisma.product.create).toHaveBeenCalledWith({ data: dto });
   });
@@ -66,7 +66,7 @@ describe('ProductsService', () => {
   });
 
   it('should return the created product', async () => {
-    const dto: CreateProductDto = { name: 'Test Product', price: 100 };
+    const dto: CreateProductDto = { id: 1, name: 'Test Product', price: 100, createdAt: new Date() };
     const result = { id: 1, ...dto, createdAt: new Date() };
     jest.spyOn(prisma.product, 'create').mockResolvedValue(result);
     expect(await service.create(dto)).toBe(result);
