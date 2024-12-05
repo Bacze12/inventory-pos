@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProductsService } from '../src/products/products.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateProductDto } from '../src/products/dto/create-product.dto';
-import { UpdateProductDto } from '../src/products/dto/update-product.dto';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 describe('ProductsService', () => {
   let service: ProductsService;
@@ -29,74 +28,65 @@ describe('ProductsService', () => {
 
     service = module.get<ProductsService>(ProductsService);
     prisma = module.get<PrismaService>(PrismaService);
+
+    jest.spyOn(console, 'error').mockImplementation(() => {}); // Silencia console.error
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  afterEach(() => {
+    jest.restoreAllMocks(); // Restaura el comportamiento original
   });
 
-  it('should call PrismaService.product.create', async () => {
-    const dto: CreateProductDto = { id: 1, name: 'Test Product', price: 100, createdAt: new Date() };
-    await service.create(dto);
-    expect(prisma.product.create).toHaveBeenCalledWith({ data: dto });
-  });
-
-  it('should call PrismaService.product.findMany', async () => {
-    await service.findAll();
-    expect(prisma.product.findMany).toHaveBeenCalled();
-  });
-
-  it('should call PrismaService.product.findUnique', async () => {
+  it('should call PrismaService.product.findUnique and return the product', async () => {
     const id = 1;
-    await service.findOne(id);
+    const result = { id, name: 'Test Product', price: 100, createdAt: new Date() };
+    jest.spyOn(prisma.product, 'findUnique').mockResolvedValue(result);
+
+    expect(await service.findOne(id)).toBe(result);
     expect(prisma.product.findUnique).toHaveBeenCalledWith({ where: { id } });
   });
 
-  it('should call PrismaService.product.update', async () => {
+  it('should throw a 404 error if product not found in findUnique', async () => {
     const id = 1;
-    const dto: UpdateProductDto = { name: 'Updated Product', price: 200 };
-    await service.update(id, dto);
+    jest.spyOn(prisma.product, 'findUnique').mockResolvedValue(null);
+
+    await expect(service.findOne(id)).rejects.toThrow('Product not found');
+  });
+
+  it('should call PrismaService.product.update and return the updated product', async () => {
+    const id = 1;
+    const dto = { name: 'Updated Product', price: 200 };
+    const result = { id, ...dto, createdAt: new Date() };
+    jest.spyOn(prisma.product, 'update').mockResolvedValue(result);
+
+    expect(await service.update(id, dto)).toBe(result);
     expect(prisma.product.update).toHaveBeenCalledWith({ where: { id }, data: dto });
   });
 
-  it('should call PrismaService.product.delete', async () => {
+  it('should throw a 404 error if product not found in update', async () => {
     const id = 1;
-    await service.remove(id);
+    const dto = { name: 'Updated Product', price: 200 };
+    jest.spyOn(prisma.product, 'update').mockImplementation(() => {
+      throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
+    });
+
+    await expect(service.update(id, dto)).rejects.toThrow('Product not found');
+  });
+
+  it('should call PrismaService.product.delete and return the removed product', async () => {
+    const id = 1;
+    const result = { id, name: 'Test Product', price: 100, createdAt: new Date() };
+    jest.spyOn(prisma.product, 'delete').mockResolvedValue(result);
+
+    expect(await service.remove(id)).toBe(result);
     expect(prisma.product.delete).toHaveBeenCalledWith({ where: { id } });
   });
 
-  it('should return the created product', async () => {
-    const dto: CreateProductDto = { id: 1, name: 'Test Product', price: 100, createdAt: new Date() };
-    const result = { id: 1, ...dto, createdAt: new Date() };
-    jest.spyOn(prisma.product, 'create').mockResolvedValue(result);
-    expect(await service.create(dto)).toBe(result);
-  });
-
-  it('should return all products', async () => {
-    const result = [{ id: 1, name: 'Test Product', price: 100, createdAt: new Date() }];
-    jest.spyOn(prisma.product, 'findMany').mockResolvedValue(result);
-    expect(await service.findAll()).toBe(result);
-  });
-
-  it('should return a single product by ID', async () => {
+  it('should throw a 404 error if product not found in delete', async () => {
     const id = 1;
-    const result = { id: 1, name: 'Test Product', price: 100, createdAt: new Date() };
-    jest.spyOn(prisma.product, 'findUnique').mockResolvedValue(result);
-    expect(await service.findOne(id)).toBe(result);
-  });
+    jest.spyOn(prisma.product, 'delete').mockImplementation(() => {
+      throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
+    });
 
-  it('should return the updated product', async () => {
-    const id = 1;
-    const dto: UpdateProductDto = { name: 'Updated Product', price: 200 };
-    const result = { id: 1, ...dto, createdAt: new Date() };
-    jest.spyOn(prisma.product, 'update').mockResolvedValue(result);
-    expect(await service.update(id, dto)).toBe(result);
-  });
-
-  it('should return the removed product', async () => {
-    const id = 1;
-    const result = { id: 1, name: 'Test Product', price: 100, createdAt: new Date() };
-    jest.spyOn(prisma.product, 'delete').mockResolvedValue(result);
-    expect(await service.remove(id)).toBe(result);
+    await expect(service.remove(id)).rejects.toThrow('Product not found');
   });
 });

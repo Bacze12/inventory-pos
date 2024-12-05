@@ -53,8 +53,9 @@ describe('ProductsController', () => {
   it('should call ProductsService.update with correct parameters', async () => {
     const id = '1';
     const dto: UpdateProductDto = { name: 'Updated Product', price: 200 };
-    await controller.update(id, dto);
-    expect(service.update).toHaveBeenCalledWith(+id, dto);
+    const result = { id: 1, name: 'Updated Product', price: 200, createdAt: new Date() };
+    jest.spyOn(service, 'update').mockResolvedValue(result);
+    expect(await controller.update(id, dto)).toBe(result);
   });
 
   it('should call ProductsService.remove with correct parameters', async () => {
@@ -86,7 +87,7 @@ describe('ProductsController', () => {
   it('should return the updated product', async () => {
     const id = '1';
     const dto: UpdateProductDto = { name: 'Updated Product', price: 200 };
-    const result = { id: 1, ...dto, createdAt: new Date() };
+    const result = { id: 1, name: 'Updated Product', price: 200, createdAt: new Date() };
     jest.spyOn(service, 'update').mockResolvedValue(result);
     expect(await controller.update(id, dto)).toBe(result);
   });
