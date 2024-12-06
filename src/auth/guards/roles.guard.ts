@@ -1,8 +1,8 @@
-import { Injectable, CanActivate, ExecutionContext } from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
-import { ROLES_KEY } from "../../common/decorators/roles.decorator";
-import { Role } from "../../constants/roles";
-import { AuthService } from "../../auth/auth.service";
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { ROLES_KEY } from '../../common/decorators/roles.decorator';
+import { Role } from '../../constants/roles';
+import { AuthService } from '../../auth/auth.service';
 
 /**
  * Guard to handle role-based access control.
@@ -10,11 +10,14 @@ import { AuthService } from "../../auth/auth.service";
  */
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector, private authService: AuthService) {}
+  constructor(
+    private readonly reflector: Reflector,
+    private readonly authService: AuthService,
+  ) {}
 
   /**
    * Determines if the current user has the required roles to access the route.
-   * 
+   *
    * @param context - The execution context of the request.
    * @returns {Promise<boolean>} - True if the user has the required roles, otherwise false.
    */

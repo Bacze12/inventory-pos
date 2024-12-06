@@ -12,7 +12,10 @@ export class ProductsService {
       return await this.prisma.product.create({ data: createProductDto });
     } catch (error) {
       console.error('Error creating product:', error);
-      throw new HttpException('Failed to create product', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Failed to create product',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -21,12 +24,15 @@ export class ProductsService {
       return await this.prisma.product.findMany();
     } catch (error) {
       console.error('Error retrieving products:', error);
-      throw new HttpException('Failed to retrieve products', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Failed to retrieve products',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
   private logError(message: string, error: any) {
     if (process.env.NODE_ENV === 'development') {
-    console.error(message, error);
+      console.error(message, error);
     }
   }
   public async findOne(id: number) {
@@ -38,7 +44,7 @@ export class ProductsService {
       return product;
     } catch (error) {
       console.error('Error retrieving product:', error);
-      throw error; 
+      throw error;
     }
   }
 
@@ -51,10 +57,16 @@ export class ProductsService {
       return product;
     } catch (error) {
       console.error('Error updating product:', error);
-      if (error instanceof HttpException && error.message === 'Product not found') {
+      if (
+        error instanceof HttpException &&
+        error.message === 'Product not found'
+      ) {
         throw error; // Deja que la excepción original pase
       }
-      throw new HttpException('Failed to update product', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Failed to update product',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -64,10 +76,16 @@ export class ProductsService {
       return product;
     } catch (error) {
       console.error('Error deleting product:', error);
-      if (error instanceof HttpException && error.message === 'Product not found') {
+      if (
+        error instanceof HttpException &&
+        error.message === 'Product not found'
+      ) {
         throw error; // Deja que la excepción original pase
       }
-      throw new HttpException('Failed to delete product', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Failed to delete product',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

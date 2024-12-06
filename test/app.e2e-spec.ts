@@ -3,7 +3,6 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 
-
 describe('AppController (e2e)', () => {
   let app: INestApplication;
 
@@ -13,7 +12,7 @@ describe('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    
+
     // Replicar la configuración de main.ts
     app.getHttpAdapter().getInstance().set('trust proxy', 1);
     app.enableCors({
@@ -58,7 +57,7 @@ describe('AppController (e2e)', () => {
   //   for (let i = 0; i < 51; i++) {
   //     await request(app.getHttpServer()).get('/kpis');
   //   }
-  
+
   //   // La última solicitud debe ser bloqueada
   //   const response = await request(app.getHttpServer()).get('/kpis');
   //   expect(response.status).toBe(429); // Verifica que devuelve "Too Many Requests"
@@ -67,19 +66,16 @@ describe('AppController (e2e)', () => {
     const batchSize = 100; // Tamaño del lote
     const totalRequests = 1000;
     const batches = Math.ceil(totalRequests / batchSize);
-  
+
     for (let batch = 0; batch < batches; batch++) {
       const requests = Array.from({ length: batchSize }, () =>
         request(app.getHttpServer()).get('/products'),
       );
-  
+
       const responses = await Promise.all(requests);
       responses.forEach((res) => {
         expect(res.status).toBe(200); // Verifica que responde correctamente
       });
     }
   }, 30000); // Timeout extendido
-  
-  
-  
 });

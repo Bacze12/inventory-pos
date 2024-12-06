@@ -7,7 +7,10 @@ export const dynamicRateLimitMiddleware = (req, res, next) => {
     max: () => {
       if (req.path.includes('/kpis')) {
         return 50; // Límite más bajo para KPIs
-      } else if (req.path.includes('/products') || req.path.includes('/sales')) {
+      } else if (
+        req.path.includes('/products') ||
+        req.path.includes('/sales')
+      ) {
         return 1000; // Límite más alto para inventario y ventas
       }
       return 500; // Límite predeterminado

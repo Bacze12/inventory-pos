@@ -14,7 +14,7 @@ export class SalesController {
 
   /**
    * Creates a new sale.
-   * 
+   *
    * @param createSaleDto - The data transfer object containing sale details.
    * @returns The created sale.
    */
@@ -27,7 +27,7 @@ export class SalesController {
 
   /**
    * Retrieves all sales.
-   * 
+   *
    * @returns An array of all sales.
    */
   @Get()
@@ -38,7 +38,7 @@ export class SalesController {
 
   /**
    * Retrieves a single sale by ID.
-   * 
+   *
    * @param id - The ID of the sale.
    * @returns The sale with the specified ID.
    */

@@ -38,7 +38,12 @@ describe('ProductsService', () => {
 
   it('should call PrismaService.product.findUnique and return the product', async () => {
     const id = 1;
-    const result = { id, name: 'Test Product', price: 100, createdAt: new Date() };
+    const result = {
+      id,
+      name: 'Test Product',
+      price: 100,
+      createdAt: new Date(),
+    };
     jest.spyOn(prisma.product, 'findUnique').mockResolvedValue(result);
 
     expect(await service.findOne(id)).toBe(result);
@@ -59,7 +64,10 @@ describe('ProductsService', () => {
     jest.spyOn(prisma.product, 'update').mockResolvedValue(result);
 
     expect(await service.update(id, dto)).toBe(result);
-    expect(prisma.product.update).toHaveBeenCalledWith({ where: { id }, data: dto });
+    expect(prisma.product.update).toHaveBeenCalledWith({
+      where: { id },
+      data: dto,
+    });
   });
 
   it('should throw a 404 error if product not found in update', async () => {
@@ -74,7 +82,12 @@ describe('ProductsService', () => {
 
   it('should call PrismaService.product.delete and return the removed product', async () => {
     const id = 1;
-    const result = { id, name: 'Test Product', price: 100, createdAt: new Date() };
+    const result = {
+      id,
+      name: 'Test Product',
+      price: 100,
+      createdAt: new Date(),
+    };
     jest.spyOn(prisma.product, 'delete').mockResolvedValue(result);
 
     expect(await service.remove(id)).toBe(result);

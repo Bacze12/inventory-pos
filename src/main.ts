@@ -12,12 +12,13 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       process.env.FRONTEND_URL,
-      'https://inventory-pos-frontend.vercel.app', 'http://localhost:3000'
+      'https://inventory-pos-frontend.vercel.app',
+      'http://localhost:3000',
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   });
-  
+
   // Middleware for rate limiting
   app.use(dynamicRateLimitMiddleware);
   app.use((req, res, next) => {

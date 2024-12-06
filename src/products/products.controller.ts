@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+} from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -15,7 +23,7 @@ export class ProductsController {
 
   /**
    * Creates a new product.
-   * 
+   *
    * @param createProductDto - The data transfer object containing product details.
    * @returns The created product.
    */
@@ -28,7 +36,7 @@ export class ProductsController {
 
   /**
    * Retrieves all products.
-   * 
+   *
    * @returns An array of all products.
    */
   @Get()
@@ -39,7 +47,7 @@ export class ProductsController {
 
   /**
    * Retrieves a single product by ID.
-   * 
+   *
    * @param id - The ID of the product.
    * @returns The product with the specified ID.
    */
@@ -51,20 +59,23 @@ export class ProductsController {
 
   /**
    * Updates a product.
-   * 
+   *
    * @param id - The ID of the product to update.
    * @param updateProductDto - The data transfer object containing updated product details.
    * @returns The updated product.
    */
   @Patch(':id')
   @ApiOperation({ summary: 'Update a product' })
-  public async update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
+  public async update(
+    @Param('id') id: string,
+    @Body() updateProductDto: UpdateProductDto,
+  ) {
     return this.productsService.update(+id, updateProductDto);
   }
 
   /**
    * Deletes a product.
-   * 
+   *
    * @param id - The ID of the product to delete.
    * @returns The deleted product.
    */

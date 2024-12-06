@@ -10,6 +10,9 @@ export class CreateProductDto {
   @ApiProperty({ description: 'Precio del producto', example: 1000.5 })
   public price: number;
 
-  @ApiProperty({ description: 'Fecha de creación del producto', example: new Date() })
+  @ApiProperty({
+    description: 'Fecha de creación del producto',
+    example: new Date(),
+  })
   public createdAt: Date;
 }
