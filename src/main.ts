@@ -10,7 +10,10 @@ async function bootstrap() {
   app.getHttpAdapter().getInstance().set('trust proxy', 1);
 
   app.enableCors({
-    origin: process.env.FRONTEND_URL,
+    origin: [
+      process.env.FRONTEND_URL,
+      'https://inventory-pos-frontend.vercel.app/'
+    ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   });
