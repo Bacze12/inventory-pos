@@ -1,0 +1,90 @@
+openapi: 3.0.0
+info:
+  title: Sales API
+  description: API for managing sales
+  version: 1.0.0
+paths:
+  /sales:
+    get:
+      summary: Retrieve all sales
+      responses:
+        '200':
+          description: A list of sales
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Sale'
+    post:
+      summary: Create a new sale
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSaleDto'
+      responses:
+        '201':
+          description: Sale created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+  /sales/{id}:
+    get:
+      summary: Retrieve a single sale by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A single sale
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+components:
+  schemas:
+    Sale:
+      type: object
+      properties:
+        id:
+          type: integer
+        total:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SaleItem'
+    CreateSaleDto:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SaleItemDto'
+    SaleItem:
+      type: object
+      properties:
+        productId:
+          type: integer
+        quantity:
+          type: integer
+        price:
+          type: number
+    SaleItemDto:
+      type: object
+      properties:
+        productId:
+          type: integer
+        quantity:
+          type: integer
+        price:
+          type: number
