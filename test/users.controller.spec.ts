@@ -34,8 +34,9 @@ describe('UsersController', () => {
 
   describe('findAll', () => {
     it('should call UsersService.findAll with correct parameters', async () => {
-      await controller.findAll();
-      expect(service.findAll).toHaveBeenCalled();
+      const isActive = 'true';
+      await controller.findAll(isActive);
+      expect(service.findAll).toHaveBeenCalledWith(true);
     });
 
     it('should return all users', async () => {
@@ -49,13 +50,13 @@ describe('UsersController', () => {
 
   describe('findOne', () => {
     it('should call UsersService.findOne with correct parameters', async () => {
-      const id = 1;
-      await controller.findOne(id);
-      expect(service.findOne).toHaveBeenCalledWith(id);
+      const id = '1';
+      await controller.findOne(+id);
+      expect(service.findOne).toHaveBeenCalledWith(+id);
     });
 
     it('should return a single user by ID', async () => {
-      const id = 1;
+      const id = '1';
       const result = {
         id: 1,
         email: 'test@example.com',
@@ -63,20 +64,20 @@ describe('UsersController', () => {
         role: 'user',
       };
       jest.spyOn(service, 'findOne').mockResolvedValue(result);
-      expect(await controller.findOne(id)).toBe(result);
+      expect(await controller.findOne(+id)).toBe(result);
     });
   });
 
   describe('update', () => {
     it('should call UsersService.update with correct parameters', async () => {
-      const id = 1;
+      const id = '1';
       const dto: UpdateUserDto = { name: 'Updated User', email: 'updated@example.com' };
-      await controller.update(id, dto);
-      expect(service.update).toHaveBeenCalledWith(id, dto);
+      await controller.update(+id, dto);
+      expect(service.update).toHaveBeenCalledWith(+id, dto);
     });
 
     it('should return the updated user', async () => {
-      const id = 1;
+      const id = '1';
       const dto: UpdateUserDto = { name: 'Updated User', email: 'updated@example.com' };
       const result = {
         id: 1,
@@ -85,19 +86,19 @@ describe('UsersController', () => {
         role: 'user',
       };
       jest.spyOn(service, 'update').mockResolvedValue(result);
-      expect(await controller.update(id, dto)).toBe(result);
+      expect(await controller.update(+id, dto)).toBe(result);
     });
   });
 
   describe('deactivate', () => {
     it('should call UsersService.deactivate with correct parameters', async () => {
-      const id = 1;
-      await controller.deactivate(id);
-      expect(service.deactivate).toHaveBeenCalledWith(id);
+      const id = '1';
+      await controller.deactivate(+id);
+      expect(service.deactivate).toHaveBeenCalledWith(+id);
     });
 
     it('should return the deactivated user', async () => {
-      const id = 1;
+      const id = '1';
       const result = {
         id: 1,
         email: 'test@example.com',
@@ -106,19 +107,19 @@ describe('UsersController', () => {
         isActive: false,
       };
       jest.spyOn(service, 'deactivate').mockResolvedValue(result);
-      expect(await controller.deactivate(id)).toBe(result);
+      expect(await controller.deactivate(+id)).toBe(result);
     });
   });
 
   describe('reactivate', () => {
     it('should call UsersService.reactivate with correct parameters', async () => {
-      const id = 1;
-      await controller.reactivate(id);
-      expect(service.reactivate).toHaveBeenCalledWith(id);
+      const id = '1';
+      await controller.reactivate(+id);
+      expect(service.reactivate).toHaveBeenCalledWith(+id);
     });
 
     it('should return the reactivated user', async () => {
-      const id = 1;
+      const id = '1';
       const result = {
         id: 1,
         email: 'test@example.com',
@@ -127,7 +128,7 @@ describe('UsersController', () => {
         isActive: true,
       };
       jest.spyOn(service, 'reactivate').mockResolvedValue(result);
-      expect(await controller.reactivate(id)).toBe(result);
+      expect(await controller.reactivate(+id)).toBe(result);
     });
   });
 });

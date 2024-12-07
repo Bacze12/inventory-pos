@@ -30,54 +30,60 @@ describe('SalesController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should call SalesService.createSale with correct parameters', async () => {
-    const dto: CreateSaleDto = {
-      items: [
-        { quantity: 2, price: 150.75, productId: 1 },
-      ],
-    };
-    await controller.create(dto);
-    expect(service.createSale).toHaveBeenCalledWith(dto);
+  describe('create', () => {
+    it('should call SalesService.createSale with correct parameters', async () => {
+      const dto: CreateSaleDto = {
+        items: [
+          { quantity: 2, price: 100, productId: 1 },
+        ],
+      };
+      await controller.create(dto);
+      expect(service.createSale).toHaveBeenCalledWith(dto);
+    });
+
+    it('should return the created sale', async () => {
+      const dto: CreateSaleDto = {
+        items: [
+          { quantity: 2, price: 100, productId: 1 },
+        ],
+      };
+      const result = { id: 1, total: 200, items: dto.items };
+      jest.spyOn(service, 'createSale').mockResolvedValue(result);
+      expect(await controller.create(dto)).toBe(result);
+    });
   });
 
-  it('should call SalesService.findAll', async () => {
-    await controller.findAll();
-    expect(service.findAll).toHaveBeenCalled();
+  describe('findAll', () => {
+    it('should call SalesService.findAll', async () => {
+      await controller.findAll();
+      expect(service.findAll).toHaveBeenCalled();
+    });
+
+    it('should return all sales', async () => {
+      const result = [
+        { id: 1, total: 200, items: [{ quantity: 2, price: 100, productId: 1 }] },
+      ];
+      jest.spyOn(service, 'findAll').mockResolvedValue(result);
+      expect(await controller.findAll()).toBe(result);
+    });
   });
 
-  it('should call SalesService.findOne with correct parameters', async () => {
-    const id = '1';
-    await controller.findOne(id);
-    expect(service.findOne).toHaveBeenCalledWith(+id);
-  });
+  describe('findOne', () => {
+    it('should call SalesService.findOne with correct parameters', async () => {
+      const id = '1';
+      await controller.findOne(id);
+      expect(service.findOne).toHaveBeenCalledWith(+id);
+    });
 
-  it('should return the created sale', async () => {
-    const dto: CreateSaleDto = {
-      items: [
-        { quantity: 2, price: 150.75, productId: 1 },
-      ],
-    };
-    const result = { id: 1, ...dto, total: 301.5 };
-    jest.spyOn(service, 'createSale').mockResolvedValue(result);
-    expect(await controller.create(dto)).toBe(result);
-  });
-
-  it('should return all sales', async () => {
-    const result = [
-      { id: 1, items: [{ quantity: 2, price: 150.75, productId: 1 }], total: 301.5 },
-    ];
-    jest.spyOn(service, 'findAll').mockResolvedValue(result);
-    expect(await controller.findAll()).toBe(result);
-  });
-
-  it('should return a single sale by ID', async () => {
-    const id = '1';
-    const result = {
-      id: 1,
-      items: [{ quantity: 2, price: 150.75, productId: 1 }],
-      total: 301.5,
-    };
-    jest.spyOn(service, 'findOne').mockResolvedValue(result);
-    expect(await controller.findOne(id)).toBe(result);
+    it('should return a single sale by ID', async () => {
+      const id = '1';
+      const result = {
+        id: 1,
+        total: 200,
+        items: [{ quantity: 2, price: 100, productId: 1 }],
+      };
+      jest.spyOn(service, 'findOne').mockResolvedValue(result);
+      expect(await controller.findOne(id)).toBe(result);
+    });
   });
 });
