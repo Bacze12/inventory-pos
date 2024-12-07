@@ -48,6 +48,20 @@ async function bootstrap() {
   Object.assign(document.paths, authDoc.paths, productsDoc.paths, salesDoc.paths, usersDoc.paths);
   Object.assign(document.components.schemas, authDoc.components.schemas, productsDoc.components.schemas, salesDoc.components.schemas, usersDoc.components.schemas);
 
+  app.getHttpAdapter().get('/api-docs-json', (req, res) => {
+    res.header('Content-Type', 'application/json');
+    res.header('Content-Disposition', 'attachment; filename=swagger-spec.json');
+    return res.send(document);
+  });
+
+  // Añadir endpoint para descargar en formato YAML
+  app.getHttpAdapter().get('/api-docs-yaml', (req, res) => {
+    const yamlStr = yaml.dump(document);
+    res.header('Content-Type', 'text/yaml');
+    res.header('Content-Disposition', 'attachment; filename=swagger-spec.yaml');
+    return res.send(yamlStr);
+  });
+  
   SwaggerModule.setup('api', app, document);
 
   await app.listen(process.env.PORT ?? 3000);
