@@ -145,4 +145,4 @@ describe('UsersController', () => {
       expect(await controller.reactivate(+id)).toBe(result);
     });
   });
-}
+});
