@@ -1,6 +1,5 @@
-import { IsEmail, IsString, IsNotEmpty, MinLength } from 'class-validator';
-import { ROLES } from 'src/constants/roles';
-import { IsValidRole } from 'src/common/decorators/roles.decorator';
+import { IsEmail, IsString, IsNotEmpty, MinLength, IsEnum } from 'class-validator';
+import { UserRole } from '@prisma/client';
 
 export class CreateAuthDto {
   @IsEmail()
@@ -10,8 +9,8 @@ export class CreateAuthDto {
   @IsNotEmpty()
   public name: string;
 
-  @IsValidRole()
-  public role: keyof typeof ROLES;
+  @IsEnum(UserRole)
+  role: UserRole;
 
   @IsString()
   @IsNotEmpty()

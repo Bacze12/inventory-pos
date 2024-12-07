@@ -1,10 +1,11 @@
-import { Role } from 'src/constants/roles';
-import { IsString, IsEmail, IsOptional } from 'class-validator';
+import { UserRole } from '@prisma/client';
+import { IsString, IsEmail, IsOptional, IsEnum } from 'class-validator';
+
 export class UserDto {
   public id: number;
   public email: string;
   public name: string;
-  public role: Role;
+  public role: UserRole;
 }
 
 export class UpdateUserDto {
@@ -16,7 +17,7 @@ export class UpdateUserDto {
   @IsOptional()
   public email?: string;
 
-  @IsString()
+  @IsEnum(UserRole)
   @IsOptional()
-  public role?: Role;
+  public role?: UserRole;
 }
