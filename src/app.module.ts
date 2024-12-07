@@ -8,13 +8,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 @Module({
-  imports: [
-    AuthModule,
-    PrismaModule,
-    UsersModule,
-    ProductsModule,
-    SalesModule
-  ],
+  imports: [AuthModule, PrismaModule, UsersModule, ProductsModule, SalesModule],
   controllers: [AppController],
   providers: [AppService],
 })

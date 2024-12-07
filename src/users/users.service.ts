@@ -18,7 +18,6 @@ export class UsersService {
       },
     });
   }
-  
 
   /**
    * Retrieves a single user by ID.
@@ -45,7 +44,6 @@ export class UsersService {
       data: { isActive: false },
     });
   }
-  
 
   public async reactivate(id: number) {
     return this.prisma.user.update({
@@ -53,6 +51,4 @@ export class UsersService {
       data: { isActive: true },
     });
   }
-  
-  
 }

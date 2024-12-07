@@ -1,24 +1,22 @@
-
 import { Role } from 'src/constants/roles';
 import { IsString, IsEmail, IsOptional } from 'class-validator';
 export class UserDto {
-  id: number;
-  email: string;
-  name: string;
-  role: Role;
+  public id: number;
+  public email: string;
+  public name: string;
+  public role: Role;
 }
 
 export class UpdateUserDto {
-    @IsString()
-    @IsOptional()
-    name?: string;
+  @IsString()
+  @IsOptional()
+  public name?: string;
 
-    @IsEmail()
-    @IsOptional()
-    email?: string;
+  @IsEmail()
+  @IsOptional()
+  public email?: string;
 
-    @IsString()
-    @IsOptional()
-    role?: Role;
-
+  @IsString()
+  @IsOptional()
+  public role?: Role;
 }
