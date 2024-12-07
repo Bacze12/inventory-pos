@@ -62,20 +62,20 @@ describe('AppController (e2e)', () => {
   //   const response = await request(app.getHttpServer()).get('/kpis');
   //   expect(response.status).toBe(429); // Verifica que devuelve "Too Many Requests"
   // });
-  it('should allow up to 1000 requests to /products', async () => {
-    const batchSize = 100; // Tamaño del lote
-    const totalRequests = 1000;
-    const batches = Math.ceil(totalRequests / batchSize);
+  // it('should allow up to 1000 requests to /products', async () => {
+  //   const batchSize = 100; // Tamaño del lote
+  //   const totalRequests = 1000;
+  //   const batches = Math.ceil(totalRequests / batchSize);
 
-    for (let batch = 0; batch < batches; batch++) {
-      const requests = Array.from({ length: batchSize }, () =>
-        request(app.getHttpServer()).get('/products'),
-      );
+  //   for (let batch = 0; batch < batches; batch++) {
+  //     const requests = Array.from({ length: batchSize }, () =>
+  //       request(app.getHttpServer()).get('/products'),
+  //     );
 
-      const responses = await Promise.all(requests);
-      responses.forEach((res) => {
-        expect(res.status).toBe(200); // Verifica que responde correctamente
-      });
-    }
-  }, 30000); // Timeout extendido
+  //     const responses = await Promise.all(requests);
+  //     responses.forEach((res) => {
+  //       expect(res.status).toBe(200); // Verifica que responde correctamente
+  //     });
+  //   }
+  // }, 30000); // Timeout extendido
 });

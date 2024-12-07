@@ -40,13 +40,31 @@ async function bootstrap() {
 
   // Load additional Swagger documentation files
   const authDoc = yaml.load(fs.readFileSync('docs/swagger/auth.yaml', 'utf8'));
-  const productsDoc = yaml.load(fs.readFileSync('docs/swagger/products.yaml', 'utf8'));
-  const salesDoc = yaml.load(fs.readFileSync('docs/swagger/sales.yaml', 'utf8'));
-  const usersDoc = yaml.load(fs.readFileSync('docs/swagger/users.yaml', 'utf8'));
+  const productsDoc = yaml.load(
+    fs.readFileSync('docs/swagger/products.yaml', 'utf8'),
+  );
+  const salesDoc = yaml.load(
+    fs.readFileSync('docs/swagger/sales.yaml', 'utf8'),
+  );
+  const usersDoc = yaml.load(
+    fs.readFileSync('docs/swagger/users.yaml', 'utf8'),
+  );
 
   // Merge additional documentation into the main document
-  Object.assign(document.paths, authDoc.paths, productsDoc.paths, salesDoc.paths, usersDoc.paths);
-  Object.assign(document.components.schemas, authDoc.components.schemas, productsDoc.components.schemas, salesDoc.components.schemas, usersDoc.components.schemas);
+  Object.assign(
+    document.paths,
+    authDoc.paths,
+    productsDoc.paths,
+    salesDoc.paths,
+    usersDoc.paths,
+  );
+  Object.assign(
+    document.components.schemas,
+    authDoc.components.schemas,
+    productsDoc.components.schemas,
+    salesDoc.components.schemas,
+    usersDoc.components.schemas,
+  );
 
   app.getHttpAdapter().get('/api-docs-json', (req, res) => {
     res.header('Content-Type', 'application/json');
@@ -61,7 +79,7 @@ async function bootstrap() {
     res.header('Content-Disposition', 'attachment; filename=swagger-spec.yaml');
     return res.send(yamlStr);
   });
-  
+
   SwaggerModule.setup('api', app, document);
 
   await app.listen(process.env.PORT ?? 3000);

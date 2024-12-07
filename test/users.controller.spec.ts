@@ -41,7 +41,16 @@ describe('UsersController', () => {
 
     it('should return all users', async () => {
       const result = [
-        { id: 1, email: 'test@example.com', name: 'Test User', role: 'user', password: 'password123', createdAt: new Date(), updatedAt: new Date(), isActive: true },
+        {
+          id: 1,
+          email: 'test@example.com',
+          name: 'Test User',
+          role: 'user',
+          password: 'password123',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          isActive: true,
+        },
       ];
       jest.spyOn(service, 'findAll').mockResolvedValue(result);
       expect(await controller.findAll()).toBe(result);
@@ -75,14 +84,20 @@ describe('UsersController', () => {
   describe('update', () => {
     it('should call UsersService.update with correct parameters', async () => {
       const id = '1';
-      const dto: UpdateUserDto = { name: 'Updated User', email: 'updated@example.com' };
+      const dto: UpdateUserDto = {
+        name: 'Updated User',
+        email: 'updated@example.com',
+      };
       await controller.update(+id, dto);
       expect(service.update).toHaveBeenCalledWith(+id, dto);
     });
 
     it('should return the updated user', async () => {
       const id = '1';
-      const dto: UpdateUserDto = { name: 'Updated User', email: 'updated@example.com' };
+      const dto: UpdateUserDto = {
+        name: 'Updated User',
+        email: 'updated@example.com',
+      };
       const result = {
         id: 1,
         email: 'updated@example.com',

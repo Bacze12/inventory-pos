@@ -33,9 +33,7 @@ describe('SalesController', () => {
   describe('create', () => {
     it('should call SalesService.createSale with correct parameters', async () => {
       const dto: CreateSaleDto = {
-        items: [
-          { quantity: 2, price: 100, productId: 1 },
-        ],
+        items: [{ quantity: 2, price: 100, productId: 1 }],
       };
       await controller.create(dto);
       expect(service.createSale).toHaveBeenCalledWith(dto);
@@ -43,11 +41,15 @@ describe('SalesController', () => {
 
     it('should return the created sale', async () => {
       const dto: CreateSaleDto = {
-        items: [
-          { quantity: 2, price: 100, productId: 1 },
-        ],
+        items: [{ quantity: 2, price: 100, productId: 1 }],
       };
-      const result = { id: 1, total: 200, items: dto.items, createdAt: new Date(), updatedAt: new Date() };
+      const result = {
+        id: 1,
+        total: 200,
+        items: dto.items,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
       jest.spyOn(service, 'createSale').mockResolvedValue(result);
       expect(await controller.create(dto)).toBe(result);
     });
@@ -61,7 +63,13 @@ describe('SalesController', () => {
 
     it('should return all sales', async () => {
       const result = [
-        { id: 1, total: 200, items: [{ quantity: 2, price: 100, productId: 1, id: 1, saleId: 1 }], createdAt: new Date(), updatedAt: new Date() },
+        {
+          id: 1,
+          total: 200,
+          items: [{ quantity: 2, price: 100, productId: 1, id: 1, saleId: 1 }],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
       ];
       jest.spyOn(service, 'findAll').mockResolvedValue(result);
       expect(await controller.findAll()).toBe(result);

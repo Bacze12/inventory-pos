@@ -50,7 +50,13 @@ describe('AuthController', () => {
         role: ROLES.CASHIER,
         password: 'password123',
       };
-      const result = { id: 1, ...dto, createdAt: new Date(), updatedAt: new Date(), isActive: true };
+      const result = {
+        id: 1,
+        ...dto,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        isActive: true,
+      };
       jest.spyOn(service, 'registerUser').mockResolvedValue(result);
       expect(await controller.register(dto)).toBe(result);
     });
@@ -65,7 +71,10 @@ describe('AuthController', () => {
         password: 'password123',
       };
       await controller.login(dto);
-      expect(service.validateUser).toHaveBeenCalledWith(dto.email, dto.password);
+      expect(service.validateUser).toHaveBeenCalledWith(
+        dto.email,
+        dto.password,
+      );
     });
 
     it('should return a message if validation fails', async () => {
@@ -76,7 +85,9 @@ describe('AuthController', () => {
         password: 'password123',
       };
       jest.spyOn(service, 'validateUser').mockResolvedValue(null);
-      expect(await controller.login(dto)).toEqual({ message: 'Invalid email or password' });
+      expect(await controller.login(dto)).toEqual({
+        message: 'Invalid email or password',
+      });
     });
 
     it('should return the access token if validation succeeds', async () => {
