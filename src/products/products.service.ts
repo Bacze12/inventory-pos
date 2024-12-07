@@ -88,4 +88,16 @@ export class ProductsService {
       );
     }
   }
+
+  public async deleteAll() {
+    try {
+      await this.prisma.product.deleteMany();
+    } catch (error) {
+      console.error('Error deleting all products:', error);
+      throw new HttpException(
+        'Failed to delete all products',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }

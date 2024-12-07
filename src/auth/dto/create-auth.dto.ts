@@ -10,8 +10,6 @@ export class CreateAuthDto {
   @IsNotEmpty()
   public name: string;
 
-  @IsString()
-  @IsNotEmpty()
   @IsValidRole()
   public role: Role;
 
