@@ -34,9 +34,9 @@ describe('AuthController', () => {
     it('should call AuthService.registerUser with correct parameters', async () => {
       const dto: CreateAuthDto = {
         email: 'test@example.com',
-        password: 'password',
-        role: 'user',
         name: 'Test User',
+        role: 'user',
+        password: 'password123',
       };
       await controller.register(dto);
       expect(service.registerUser).toHaveBeenCalledWith(dto);
@@ -45,9 +45,9 @@ describe('AuthController', () => {
     it('should return the registered user', async () => {
       const dto: CreateAuthDto = {
         email: 'test@example.com',
-        password: 'password',
-        role: 'user',
         name: 'Test User',
+        role: 'user',
+        password: 'password123',
       };
       const result = { id: 1, ...dto };
       jest.spyOn(service, 'registerUser').mockResolvedValue(result);
@@ -59,9 +59,9 @@ describe('AuthController', () => {
     it('should call AuthService.validateUser with correct parameters', async () => {
       const dto: CreateAuthDto = {
         email: 'test@example.com',
-        password: 'password',
-        role: 'user',
         name: 'Test User',
+        role: 'user',
+        password: 'password123',
       };
       await controller.login(dto);
       expect(service.validateUser).toHaveBeenCalledWith(dto.email, dto.password);
@@ -70,9 +70,9 @@ describe('AuthController', () => {
     it('should return a message if validation fails', async () => {
       const dto: CreateAuthDto = {
         email: 'test@example.com',
-        password: 'password',
-        role: 'user',
         name: 'Test User',
+        role: 'user',
+        password: 'password123',
       };
       jest.spyOn(service, 'validateUser').mockResolvedValue(null);
       expect(await controller.login(dto)).toEqual({ message: 'Invalid email or password' });
@@ -81,9 +81,9 @@ describe('AuthController', () => {
     it('should return the access token if validation succeeds', async () => {
       const dto: CreateAuthDto = {
         email: 'test@example.com',
-        password: 'password',
-        role: 'user',
         name: 'Test User',
+        role: 'user',
+        password: 'password123',
       };
       const user = { id: 1, ...dto };
       const token = { access_token: 'token' };
