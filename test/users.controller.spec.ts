@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from '../src/users/users.controller';
 import { UsersService } from '../src/users/users.service';
-import { UserDto, UpdateUserDto } from '../src/users/dto/user.dto';
+import { UpdateUserDto } from '../src/users/dto/user.dto';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -145,4 +145,4 @@ describe('UsersController', () => {
       expect(await controller.reactivate(+id)).toBe(result);
     });
   });
-});
+}
