@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { dynamicRateLimitMiddleware } from './middleware/rate-limit.middleware';
+import * as fs from 'fs';
+import * as yaml from 'js-yaml';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -35,6 +37,17 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
+
+  // Load additional Swagger documentation files
+  const authDoc = yaml.load(fs.readFileSync('docs/swagger/auth.yaml', 'utf8'));
+  const productsDoc = yaml.load(fs.readFileSync('docs/swagger/products.yaml', 'utf8'));
+  const salesDoc = yaml.load(fs.readFileSync('docs/swagger/sales.yaml', 'utf8'));
+  const usersDoc = yaml.load(fs.readFileSync('docs/swagger/users.yaml', 'utf8'));
+
+  // Merge additional documentation into the main document
+  Object.assign(document.paths, authDoc.paths, productsDoc.paths, salesDoc.paths, usersDoc.paths);
+  Object.assign(document.components.schemas, authDoc.components.schemas, productsDoc.components.schemas, salesDoc.components.schemas, usersDoc.components.schemas);
+
   SwaggerModule.setup('api', app, document);
 
   await app.listen(process.env.PORT ?? 3000);

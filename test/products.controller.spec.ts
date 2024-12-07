@@ -20,6 +20,7 @@ describe('ProductsController', () => {
             findOne: jest.fn(),
             update: jest.fn(),
             remove: jest.fn(),
+            deleteAll: jest.fn(), // Add deleteAll method to mock service
           },
         },
       ],
@@ -27,6 +28,9 @@ describe('ProductsController', () => {
 
     controller = module.get<ProductsController>(ProductsController);
     service = module.get<ProductsService>(ProductsService);
+
+    // Add step to delete existing products before creating new ones
+    await service.deleteAll();
   });
 
   it('should be defined', () => {

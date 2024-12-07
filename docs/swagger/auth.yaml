@@ -1,0 +1,49 @@
+openapi: 3.0.0
+info:
+  title: Auth API
+  description: API for user authentication and authorization
+  version: 1.0.0
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAuthDto'
+      responses:
+        '201':
+          description: User registered successfully
+        '400':
+          description: Bad request
+  /auth/login:
+    post:
+      summary: Login a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAuthDto'
+      responses:
+        '200':
+          description: User logged in successfully
+        '401':
+          description: Unauthorized
+components:
+  schemas:
+    CreateAuthDto:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          type: string
+        password:
+          type: string
+          format: password
