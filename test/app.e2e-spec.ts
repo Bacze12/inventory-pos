@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 
+
 describe('AppController (e2e)', () => {
   let app: INestApplication;
 
@@ -17,7 +18,7 @@ describe('AppController (e2e)', () => {
     app.getHttpAdapter().getInstance().set('trust proxy', 1);
     app.enableCors({
       origin: process.env.FRONTEND_URL,
-      methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
       credentials: true,
     });
 
