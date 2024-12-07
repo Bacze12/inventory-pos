@@ -1,5 +1,5 @@
 import { IsEmail, IsString, IsNotEmpty, MinLength } from 'class-validator';
-import { Role } from 'src/constants/roles';
+import { ROLES } from 'src/constants/roles';
 import { IsValidRole } from 'src/common/decorators/roles.decorator';
 
 export class CreateAuthDto {
@@ -11,7 +11,7 @@ export class CreateAuthDto {
   public name: string;
 
   @IsValidRole()
-  public role: Role;
+  public role: keyof typeof ROLES;
 
   @IsString()
   @IsNotEmpty()

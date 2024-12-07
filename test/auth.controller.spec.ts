@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from '../src/auth/auth.controller';
 import { AuthService } from '../src/auth/auth.service';
 import { CreateAuthDto } from '../src/auth/dto/create-auth.dto';
-import { Role } from '../src/constants/roles';
+import { ROLES } from '../src/constants/roles';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -36,7 +36,7 @@ describe('AuthController', () => {
       const dto: CreateAuthDto = {
         email: 'test@example.com',
         name: 'Test User',
-        role: Role.CASHIER,
+        role: ROLES.CASHIER,
         password: 'password123',
       };
       await controller.register(dto);
@@ -47,7 +47,7 @@ describe('AuthController', () => {
       const dto: CreateAuthDto = {
         email: 'test@example.com',
         name: 'Test User',
-        role: Role.CASHIER,
+        role: ROLES.CASHIER,
         password: 'password123',
       };
       const result = { id: 1, ...dto, createdAt: new Date(), updatedAt: new Date(), isActive: true };
@@ -61,7 +61,7 @@ describe('AuthController', () => {
       const dto: CreateAuthDto = {
         email: 'test@example.com',
         name: 'Test User',
-        role: Role.CASHIER,
+        role: ROLES.CASHIER,
         password: 'password123',
       };
       await controller.login(dto);
@@ -72,7 +72,7 @@ describe('AuthController', () => {
       const dto: CreateAuthDto = {
         email: 'test@example.com',
         name: 'Test User',
-        role: Role.CASHIER,
+        role: ROLES.CASHIER,
         password: 'password123',
       };
       jest.spyOn(service, 'validateUser').mockResolvedValue(null);
@@ -83,7 +83,7 @@ describe('AuthController', () => {
       const dto: CreateAuthDto = {
         email: 'test@example.com',
         name: 'Test User',
-        role: Role.CASHIER,
+        role: ROLES.CASHIER,
         password: 'password123',
       };
       const user = { id: 1, ...dto };
