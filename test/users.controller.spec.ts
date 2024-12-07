@@ -41,7 +41,7 @@ describe('UsersController', () => {
 
     it('should return all users', async () => {
       const result = [
-        { id: 1, email: 'test@example.com', name: 'Test User', role: 'user' },
+        { id: 1, email: 'test@example.com', name: 'Test User', role: 'user', password: 'password123', createdAt: new Date(), updatedAt: new Date(), isActive: true },
       ];
       jest.spyOn(service, 'findAll').mockResolvedValue(result);
       expect(await controller.findAll()).toBe(result);
@@ -62,6 +62,10 @@ describe('UsersController', () => {
         email: 'test@example.com',
         name: 'Test User',
         role: 'user',
+        password: 'password123',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        isActive: true,
       };
       jest.spyOn(service, 'findOne').mockResolvedValue(result);
       expect(await controller.findOne(+id)).toBe(result);
@@ -84,6 +88,10 @@ describe('UsersController', () => {
         email: 'updated@example.com',
         name: 'Updated User',
         role: 'user',
+        password: 'password123',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        isActive: true,
       };
       jest.spyOn(service, 'update').mockResolvedValue(result);
       expect(await controller.update(+id, dto)).toBe(result);
@@ -104,6 +112,9 @@ describe('UsersController', () => {
         email: 'test@example.com',
         name: 'Test User',
         role: 'user',
+        password: 'password123',
+        createdAt: new Date(),
+        updatedAt: new Date(),
         isActive: false,
       };
       jest.spyOn(service, 'deactivate').mockResolvedValue(result);
@@ -125,6 +136,9 @@ describe('UsersController', () => {
         email: 'test@example.com',
         name: 'Test User',
         role: 'user',
+        password: 'password123',
+        createdAt: new Date(),
+        updatedAt: new Date(),
         isActive: true,
       };
       jest.spyOn(service, 'reactivate').mockResolvedValue(result);

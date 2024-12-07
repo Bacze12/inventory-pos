@@ -47,7 +47,7 @@ describe('SalesController', () => {
           { quantity: 2, price: 100, productId: 1 },
         ],
       };
-      const result = { id: 1, total: 200, items: dto.items };
+      const result = { id: 1, total: 200, items: dto.items, createdAt: new Date(), updatedAt: new Date() };
       jest.spyOn(service, 'createSale').mockResolvedValue(result);
       expect(await controller.create(dto)).toBe(result);
     });
@@ -61,7 +61,7 @@ describe('SalesController', () => {
 
     it('should return all sales', async () => {
       const result = [
-        { id: 1, total: 200, items: [{ quantity: 2, price: 100, productId: 1 }] },
+        { id: 1, total: 200, items: [{ quantity: 2, price: 100, productId: 1, id: 1, saleId: 1 }], createdAt: new Date(), updatedAt: new Date() },
       ];
       jest.spyOn(service, 'findAll').mockResolvedValue(result);
       expect(await controller.findAll()).toBe(result);
@@ -80,7 +80,9 @@ describe('SalesController', () => {
       const result = {
         id: 1,
         total: 200,
-        items: [{ quantity: 2, price: 100, productId: 1 }],
+        items: [{ quantity: 2, price: 100, productId: 1, id: 1, saleId: 1 }],
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
       jest.spyOn(service, 'findOne').mockResolvedValue(result);
       expect(await controller.findOne(id)).toBe(result);
