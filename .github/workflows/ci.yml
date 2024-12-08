@@ -30,7 +30,7 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Run Tests
-        run: npm test -- --config jest.config.cjs --passWithNoTests
+        run: npm test --config=jest.config.cjs --passWithNoTests
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
