@@ -8,7 +8,7 @@ import * as yaml from 'js-yaml';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Enable trust proxy
+  // Enable trust proxy 123
   app.getHttpAdapter().getInstance().set('trust proxy', 1);
 
   app.enableCors({
