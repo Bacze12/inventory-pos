@@ -17,6 +17,7 @@ model User {
   isActive  Boolean  @default(true)
   role      UserRole @default(CASHIER)
   Sale      Sale[]
+  shifts    Shift[]
 
   @@index([email])
   @@index([role])
@@ -68,7 +69,10 @@ model Sale {
   userId        Int?
   User          User?         @relation(fields: [userId], references: [id])
   items         SaleItem[]
+  shiftId       Int?
+  shift         Shift?        @relation(fields: [shiftId], references: [id])
 
+  @@index([shiftId])
   @@index([createdAt])
   @@index([userId, createdAt])
   @@index([userId])
@@ -156,6 +160,49 @@ model Supplier {
   @@index([email])
   @@index([isActive])
   @@index([name])
+}
+model Shift {
+  id          Int       @id @default(autoincrement())
+  startTime   DateTime  @default(now())
+  endTime     DateTime?
+  userId      Int
+  status      ShiftStatus @default(OPEN)
+  initialCash Float
+  finalCash   Float?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  user        User      @relation(fields: [userId], references: [id])
+  cashDrawer  CashDrawer[]
+  sales       Sale[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model CashDrawer {
+  id          Int           @id @default(autoincrement())
+  shiftId     Int
+  type        MovementType
+  amount      Float
+  reason      String?
+  createdAt   DateTime      @default(now())
+  shift       Shift         @relation(fields: [shiftId], references: [id])
+
+  @@index([shiftId])
+}
+
+enum ShiftStatus {
+  OPEN
+  CLOSED
+  CANCELLED
+}
+
+enum MovementType {
+  CASH_IN
+  CASH_OUT
+  INITIAL_CASH
+  FINAL_CASH
 }
 
 enum InventoryMovementType {
