@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   moduleFileExtensions: ['js', 'json', 'ts'],
   rootDir: 'src',
   testRegex: '.*\\.spec\\.ts$',
@@ -11,10 +11,5 @@ export default {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1'
   },
-  // transformIgnorePatterns: ['<rootDir>/node_modules/'],
-  // globals: {
-  //   'ts-jest': {
-  //     useESM: true
-  //   }
-  // }
 }
+
