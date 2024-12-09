@@ -1,19 +1,15 @@
-import { FlatCompat } from '@eslint/eslintrc';
-import { fileURLToPath } from 'url';
-import path from 'path';
-import typescriptEslintPlugin from '@typescript-eslint/eslint-plugin';
-import typescriptEslintParser from '@typescript-eslint/parser';
-import prettierPlugin from 'eslint-plugin-prettier';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const { FlatCompat } = require('@eslint/eslintrc');
+const path = require('path');
+const typescriptEslintPlugin = require('@typescript-eslint/eslint-plugin');
+const typescriptEslintParser = require('@typescript-eslint/parser');
+const prettierPlugin = require('eslint-plugin-prettier');
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
   resolvePluginsRelativeTo: __dirname,
 });
 
-export default [
+module.exports = [
   {
     files: ['**/*.ts'],
     languageOptions: {

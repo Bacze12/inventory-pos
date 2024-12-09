@@ -11,10 +11,10 @@ export default {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1'
   },
-  transformIgnorePatterns: ['<rootDir>/node_modules/'],
-  globals: {
-    'ts-jest': {
-      useESM: true
-    }
-  }
+  // transformIgnorePatterns: ['<rootDir>/node_modules/'],
+  // globals: {
+  //   'ts-jest': {
+  //     useESM: true
+  //   }
+  // }
 }
