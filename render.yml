@@ -3,7 +3,7 @@ services:
     name: inventory-pos-api
     env: node
     buildCommand: npm install && npm run build:prod
-    startCommand: node dist/main.js
+    startCommand: node dist/src/main.js
     envVars:
       - key: DATABASE_URL
         fromDatabase:
