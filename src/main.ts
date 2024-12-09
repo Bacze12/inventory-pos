@@ -2,8 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { dynamicRateLimitMiddleware } from './middleware/rate-limit.middleware';
-import * as fs from 'fs';
-import * as yaml from 'js-yaml';
+const fs = require('fs');
+const yaml = require('js-yaml');
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
