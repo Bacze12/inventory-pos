@@ -1,9 +1,18 @@
-import { IsEmail, IsString, IsNotEmpty, MinLength, IsEnum } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  IsNotEmpty,
+  MinLength,
+  IsEnum,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRole } from '@prisma/client';
 
 export class CreateAuthDto {
-  @ApiProperty({ example: 'user@example.com', description: 'Email del usuario' })
+  @ApiProperty({
+    example: 'user@example.com',
+    description: 'Email del usuario',
+  })
   @IsEmail()
   public email: string;
 
@@ -12,17 +21,17 @@ export class CreateAuthDto {
   @IsNotEmpty()
   public name: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     enum: UserRole,
     default: UserRole.CASHIER,
-    description: 'Rol del usuario' 
+    description: 'Rol del usuario',
   })
   @IsEnum(UserRole)
   public role: UserRole;
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: '123456',
-    description: 'Contraseña del usuario (mínimo 6 caracteres)' 
+    description: 'Contraseña del usuario (mínimo 6 caracteres)',
   })
   @IsString()
   @IsNotEmpty()

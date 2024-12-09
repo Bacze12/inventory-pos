@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -12,9 +16,12 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  public async validateUser(email: string, password: string): Promise<Omit<User, 'password'> | null> {
+  public async validateUser(
+    email: string,
+    password: string,
+  ): Promise<Omit<User, 'password'> | null> {
     const user = await this.prisma.user.findUnique({ where: { email } });
-    
+
     if (!user || !user.isActive) {
       return null;
     }
@@ -28,18 +35,18 @@ export class AuthService {
   }
 
   public async login(user: Omit<User, 'password'>) {
-    const payload = { 
-      email: user.email, 
+    const payload = {
+      email: user.email,
       sub: user.id,
-      role: user.role 
+      role: user.role,
     };
-    
+
     return {
       user: {
         id: user.id,
         email: user.email,
         name: user.name,
-        role: user.role
+        role: user.role,
       },
       access_token: this.jwtService.sign(payload),
     };
@@ -49,11 +56,11 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({
       where: { id: parseInt(userId) },
     });
-    
+
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
-    
+
     return user.role;
   }
 
@@ -78,7 +85,7 @@ export class AuthService {
           password: hashedPassword,
           role,
           name,
-          isActive: true
+          isActive: true,
         },
         select: {
           id: true,
@@ -86,8 +93,8 @@ export class AuthService {
           name: true,
           role: true,
           createdAt: true,
-          isActive: true
-        }
+          isActive: true,
+        },
       });
 
       return user;

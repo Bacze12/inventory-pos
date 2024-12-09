@@ -12,10 +12,14 @@ export class ProductsService {
       // Calcular precios si no se proporcionan
       const data = {
         ...createProductDto,
-        sellingPrice: createProductDto.sellingPrice || 
-          (createProductDto.purchasePrice * (1 + (createProductDto.marginPercent || 0))),
-        finalPrice: createProductDto.finalPrice || 
-          (createProductDto.sellingPrice * (createProductDto.isIvaExempt ? 1 : 1.19)),
+        sellingPrice:
+          createProductDto.sellingPrice ||
+          createProductDto.purchasePrice *
+            (1 + (createProductDto.marginPercent || 0)),
+        finalPrice:
+          createProductDto.finalPrice ||
+          createProductDto.sellingPrice *
+            (createProductDto.isIvaExempt ? 1 : 1.19),
       };
 
       return await this.prisma.product.create({
@@ -100,8 +104,10 @@ export class ProductsService {
         await this.prisma.priceHistory.create({
           data: {
             productId: id,
-            purchasePrice: updateProductDto.purchasePrice || existingProduct.purchasePrice,
-            sellingPrice: updateProductDto.sellingPrice || existingProduct.sellingPrice,
+            purchasePrice:
+              updateProductDto.purchasePrice || existingProduct.purchasePrice,
+            sellingPrice:
+              updateProductDto.sellingPrice || existingProduct.sellingPrice,
             reason: 'Price update',
           },
         });
