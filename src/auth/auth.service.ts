@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import { UserRole } from '@prisma/client';
+import { User, UserRole } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -12,58 +12,86 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  /**
-   * Validates a user by email and password.
-   *
-   * @param email - The email of the user.
-   * @param password - The password of the user.
-   * @returns The user object without the password if validation is successful, otherwise null.
-   */
-  public async validateUser(email: string, password: string): Promise<any> {
+  public async validateUser(email: string, password: string): Promise<Omit<User, 'password'> | null> {
     const user = await this.prisma.user.findUnique({ where: { email } });
-    if (user && (await bcrypt.compare(password, user.password))) {
-      const { ...result } = user;
+    
+    if (!user || !user.isActive) {
+      return null;
+    }
+
+    if (await bcrypt.compare(password, user.password)) {
+      const { password: _, ...result } = user;
       return result;
     }
     return null;
   }
 
-  /**
-   * Logs in a user and returns a JWT access token.
-   *
-   * @param user - The user object.
-   * @returns An object containing the access token.
-   */
-  public async login(user: any) {
-    const payload = { email: user.email, sub: user.id };
+  public async login(user: Omit<User, 'password'>) {
+    const payload = { 
+      email: user.email, 
+      sub: user.id,
+      role: user.role 
+    };
+    
     return {
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role
+      },
       access_token: this.jwtService.sign(payload),
     };
   }
 
-  /**
-   * Retrieves the roles of a user by user ID.
-   *
-   * @param userId - The ID of the user.
-   * @returns The role of the user.
-   */
-  public async getUserRoles(userId: string): Promise<string> {
+  public async getUserRoles(userId: string): Promise<UserRole> {
     const user = await this.prisma.user.findUnique({
       where: { id: parseInt(userId) },
     });
+    
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    
     return user.role;
   }
 
   public async registerUser(createAuthDto: CreateAuthDto) {
     const { email, password, role, name } = createAuthDto;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    return this.prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        role: role as UserRole,
-        name,
-      },
+
+    // Verificar si el usuario ya existe
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email },
     });
+
+    if (existingUser) {
+      throw new ConflictException('Email already registered');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    try {
+      const user = await this.prisma.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          role,
+          name,
+          isActive: true
+        },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          createdAt: true,
+          isActive: true
+        }
+      });
+
+      return user;
+    } catch (error) {
+      throw new Error('Could not register user');
+    }
   }
 }

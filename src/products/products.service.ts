@@ -9,9 +9,24 @@ export class ProductsService {
 
   public async create(createProductDto: CreateProductDto) {
     try {
-      return await this.prisma.product.create({ data: createProductDto });
+      // Calcular precios si no se proporcionan
+      const data = {
+        ...createProductDto,
+        sellingPrice: createProductDto.sellingPrice || 
+          (createProductDto.purchasePrice * (1 + (createProductDto.marginPercent || 0))),
+        finalPrice: createProductDto.finalPrice || 
+          (createProductDto.sellingPrice * (createProductDto.isIvaExempt ? 1 : 1.19)),
+      };
+
+      return await this.prisma.product.create({
+        data,
+        include: {
+          Category: true,
+          Supplier: true,
+        },
+      });
     } catch (error) {
-      console.error('Error creating product:', error);
+      this.logError('Error creating product:', error);
       throw new HttpException(
         'Failed to create product',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -19,85 +34,112 @@ export class ProductsService {
     }
   }
 
-  public async findAll() {
+  public async findAll(includeInactive: boolean = false) {
     try {
-      return await this.prisma.product.findMany();
+      return await this.prisma.product.findMany({
+        where: {
+          isActive: includeInactive ? undefined : true,
+          deletedAt: null,
+        },
+        include: {
+          Category: true,
+          Supplier: true,
+        },
+      });
     } catch (error) {
-      console.error('Error retrieving products:', error);
+      this.logError('Error retrieving products:', error);
       throw new HttpException(
         'Failed to retrieve products',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
-  private logError(message: string, error: any) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error(message, error);
-    }
-  }
+
   public async findOne(id: number) {
     try {
-      const product = await this.prisma.product.findUnique({ where: { id } });
+      const product = await this.prisma.product.findUnique({
+        where: { id },
+        include: {
+          Category: true,
+          Supplier: true,
+          PriceHistory: {
+            orderBy: { date: 'desc' },
+            take: 5,
+          },
+          Inventory: {
+            orderBy: { date: 'desc' },
+            take: 5,
+          },
+        },
+      });
+
       if (!product) {
         throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
       }
+
       return product;
     } catch (error) {
-      console.error('Error retrieving product:', error);
+      this.logError('Error retrieving product:', error);
       throw error;
     }
   }
 
   public async update(id: number, updateProductDto: UpdateProductDto) {
     try {
-      const product = await this.prisma.product.update({
+      // Verificar si el producto existe
+      const existingProduct = await this.prisma.product.findUnique({
+        where: { id },
+      });
+
+      if (!existingProduct) {
+        throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
+      }
+
+      // Si hay cambio en el precio, registrar en historial
+      if (updateProductDto.price !== existingProduct.price) {
+        await this.prisma.priceHistory.create({
+          data: {
+            productId: id,
+            purchasePrice: updateProductDto.purchasePrice || existingProduct.purchasePrice,
+            sellingPrice: updateProductDto.sellingPrice || existingProduct.sellingPrice,
+            reason: 'Price update',
+          },
+        });
+      }
+
+      return await this.prisma.product.update({
         where: { id },
         data: updateProductDto,
+        include: {
+          Category: true,
+          Supplier: true,
+        },
       });
-      return product;
     } catch (error) {
-      console.error('Error updating product:', error);
-      if (
-        error instanceof HttpException &&
-        error.message === 'Product not found'
-      ) {
-        throw error; // Deja que la excepción original pase
-      }
-      throw new HttpException(
-        'Failed to update product',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      this.logError('Error updating product:', error);
+      throw error;
     }
   }
 
   public async remove(id: number) {
     try {
-      const product = await this.prisma.product.delete({ where: { id } });
-      return product;
+      // Soft delete
+      return await this.prisma.product.update({
+        where: { id },
+        data: {
+          isActive: false,
+          deletedAt: new Date(),
+        },
+      });
     } catch (error) {
-      console.error('Error deleting product:', error);
-      if (
-        error instanceof HttpException &&
-        error.message === 'Product not found'
-      ) {
-        throw error; // Deja que la excepción original pase
-      }
-      throw new HttpException(
-        'Failed to delete product',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      this.logError('Error deleting product:', error);
+      throw error;
     }
   }
 
-  public async deleteAll() {
-    try {
-      await this.prisma.product.deleteMany();
-    } catch (error) {
-      console.error('Error deleting all products:', error);
-      throw new HttpException(
-        'Failed to delete all products',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+  private logError(message: string, error: any) {
+    if (process.env.NODE_ENV === 'development') {
+      console.error(message, error);
     }
   }
 }

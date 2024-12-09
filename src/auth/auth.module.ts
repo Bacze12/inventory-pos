@@ -9,8 +9,8 @@ import { PrismaModule } from '../../prisma/prisma.module';
     PrismaModule,
     JwtModule.register({
       global: true,
-      secret: 'tu-secret-key',
-      signOptions: { expiresIn: '1h' },
+      secret: process.env.JWT_SECRET || 'tu-secret-key', // Mejor usar variable de entorno
+      signOptions: { expiresIn: '1d' }, // Aumentado a 1 día
     }),
   ],
   controllers: [AuthController],

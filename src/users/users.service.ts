@@ -1,54 +1,118 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { UpdateUserDto } from './dto/user.dto';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private readonly userSelect = {
+    id: true,
+    email: true,
+    name: true,
+    role: true,
+    isActive: true,
+    createdAt: true,
+    updatedAt: true,
+    password: false,
+  };
+
   /**
-   * Retrieves all users.
-   *
-   * @returns An array of all users.
+   * Retrieves all users with optional filtering.
    */
   public async findAll(isActive?: boolean) {
     return this.prisma.user.findMany({
       where: {
         isActive: isActive !== undefined ? isActive : undefined,
       },
+      select: this.userSelect,
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
 
   /**
    * Retrieves a single user by ID.
-   *
-   * @param id - The ID of the user.
-   * @returns The user with the specified ID.
    */
-  public async findOne(id: number) {
-    return this.prisma.user.findUnique({
+  public async findOne(id: number): Promise<Partial<User>> {
+    const user = await this.prisma.user.findUnique({
       where: { id },
+      select: {
+        ...this.userSelect,
+        shifts: {
+          select: {
+            id: true,
+            startTime: true,
+            endTime: true,
+            status: true,
+          },
+          take: 5,
+          orderBy: { startTime: 'desc' },
+        },
+      },
     });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    return user;
   }
 
-  public async update(id: number, data: UpdateUserDto) {
-    return this.prisma.user.update({
-      where: { id },
-      data,
-    });
+  /**
+   * Updates a user's information.
+   */
+  public async update(id: number, data: UpdateUserDto): Promise<Partial<User>> {
+    try {
+      // Verificar si el usuario existe
+      await this.findOne(id);
+
+      // Si se está actualizando el email, verificar que no exista
+      if (data.email) {
+        const existingUser = await this.prisma.user.findUnique({
+          where: { email: data.email },
+        });
+        if (existingUser && existingUser.id !== id) {
+          throw new ConflictException('Email already in use');
+        }
+      }
+
+      return await this.prisma.user.update({
+        where: { id },
+        data,
+        select: this.userSelect,
+      });
+    } catch (error) {
+      if (error instanceof NotFoundException || error instanceof ConflictException) {
+        throw error;
+      }
+      throw new Error('Failed to update user');
+    }
   }
 
-  public async deactivate(id: number) {
+  /**
+   * Deactivates a user.
+   */
+  public async deactivate(id: number): Promise<Partial<User>> {
+    await this.findOne(id);
     return this.prisma.user.update({
       where: { id },
       data: { isActive: false },
+      select: this.userSelect,
     });
   }
 
-  public async reactivate(id: number) {
+  /**
+   * Reactivates a user.
+   */
+  public async reactivate(id: number): Promise<Partial<User>> {
+    await this.findOne(id);
     return this.prisma.user.update({
       where: { id },
       data: { isActive: true },
+      select: this.userSelect,
     });
   }
 }

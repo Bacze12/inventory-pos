@@ -6,42 +6,40 @@ import {
   Patch,
   Body,
   Query,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UserDto, UpdateUserDto } from './dto/user.dto';
+import { Roles } from '../common/decorators/roles.decorator';
+import { UserRole } from '@prisma/client';
 
-@ApiTags('users')
+@ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Retrieve all users, optionally filtered by state' })
-  @ApiResponse({
-    status: 200,
-    description: 'The list of users',
-    type: [UserDto],
-  })
+  @ApiOperation({ summary: 'Retrieve all users' })
+  @ApiQuery({ name: 'isActive', required: false, type: Boolean })
+  @ApiResponse({ status: 200, type: [UserDto] })
   public async findAll(@Query('isActive') isActive?: string) {
     const filter = isActive !== undefined ? isActive === 'true' : undefined;
     return this.usersService.findAll(filter);
   }
 
-  @ApiOperation({ summary: 'Retrieve a user by ID' })
-  @ApiResponse({ status: 200, description: 'The found record', type: UserDto })
   @Get(':id')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Get user by ID' })
+  @ApiResponse({ status: 200, type: UserDto })
   public async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.findOne(id);
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update a user by ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'The updated record',
-    type: UserDto,
-  })
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Update user' })
+  @ApiResponse({ status: 200, type: UserDto })
   public async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
@@ -50,15 +48,17 @@ export class UsersController {
   }
 
   @Patch(':id/deactivate')
-  @ApiOperation({ summary: 'Deactivate a user by ID' })
-  @ApiResponse({ status: 200, description: 'The user was deactivated' })
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Deactivate user' })
+  @ApiResponse({ status: 200, type: UserDto })
   public async deactivate(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.deactivate(id);
   }
 
   @Patch(':id/reactivate')
-  @ApiOperation({ summary: 'Reactivate a user by ID' })
-  @ApiResponse({ status: 200, description: 'The user was reactivated' })
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Reactivate user' })
+  @ApiResponse({ status: 200, type: UserDto })
   public async reactivate(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.reactivate(id);
   }
