@@ -4,7 +4,7 @@ import { CreateSaleDto } from './dto/create-sale.dto';
 
 @Injectable()
 export class SalesService {
-  constructor(private readonly prisma: PrismaService) {}
+  public constructor(private readonly prisma: PrismaService) {}
 
   /**
    * Creates a new sale.

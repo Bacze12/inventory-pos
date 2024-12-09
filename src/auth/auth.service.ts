@@ -7,7 +7,7 @@ import { User, UserRole } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
-  constructor(
+  public constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
   ) {}
@@ -20,6 +20,7 @@ export class AuthService {
     }
 
     if (await bcrypt.compare(password, user.password)) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password: _, ...result } = user;
       return result;
     }
@@ -90,7 +91,7 @@ export class AuthService {
       });
 
       return user;
-    } catch (error) {
+    } catch {
       throw new Error('Could not register user');
     }
   }

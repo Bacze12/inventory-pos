@@ -2,44 +2,44 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateProductDto {
   @ApiProperty({ description: 'Nombre del producto' })
-  name: string;
+  public name: string;
 
   @ApiProperty({ description: 'Precio base del producto' })
-  price: number;
+  public price: number;
 
   @ApiProperty({ description: 'Código SKU del producto', required: false })
-  sku?: string;
+  public sku?: string;
 
   @ApiProperty({ description: 'Precio de compra', required: false })
-  purchasePrice?: number;
+  public purchasePrice?: number;
 
   @ApiProperty({ description: 'Porcentaje de margen', required: false })
-  marginPercent?: number;
+  public marginPercent?: number;
 
   @ApiProperty({ description: 'Precio de venta', required: false })
-  sellingPrice?: number;
+  public sellingPrice?: number;
 
   @ApiProperty({ description: 'Precio final con impuestos', required: false })
-  finalPrice?: number;
+  public finalPrice?: number;
 
   @ApiProperty({ description: 'Precio mínimo de venta', required: false })
-  minSellingPrice?: number;
+  public minSellingPrice?: number;
 
   @ApiProperty({ description: 'Tiene impuesto adicional', default: false })
-  hasExtraTax: boolean;
+  public hasExtraTax: boolean;
 
   @ApiProperty({ description: 'Tasa de impuesto adicional', required: false })
-  extraTaxRate?: number;
+  public extraTaxRate?: number;
 
   @ApiProperty({ description: 'Está exento de IVA', default: false })
-  isIvaExempt: boolean;
+  public isIvaExempt: boolean;
 
   @ApiProperty({ description: 'Stock actual', default: 0 })
-  stock: number;
+  public stock: number;
 
-  @ApiProperty({ description: 'ID de categoría', required: false })
-  categoryId?: number;
+  @ApiProperty({ description: 'ID de la categoría' })
+  public categoryId: number;
 
-  @ApiProperty({ description: 'ID de proveedor', required: false })
-  supplierId?: number;
+  @ApiProperty({ description: 'ID del proveedor' })
+  public supplierId: number;
 }

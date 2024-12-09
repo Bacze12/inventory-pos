@@ -10,7 +10,7 @@ import { AuthService } from '../../auth/auth.service';
  */
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(
+  public constructor(
     private readonly reflector: Reflector,
     private readonly authService: AuthService,
   ) {}

@@ -6,7 +6,6 @@ import {
   Patch,
   Body,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { UsersService } from './users.service';
@@ -17,7 +16,7 @@ import { UserRole } from '@prisma/client';
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  public constructor(private readonly usersService: UsersService) {}
 
   @Get()
   @ApiOperation({ summary: 'Retrieve all users' })
