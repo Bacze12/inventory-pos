@@ -71,6 +71,10 @@ paths:
       responses:
         '200':
           description: User deactivated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
   /users/{id}/reactivate:
     patch:
       summary: Reactivate a user by ID
@@ -83,6 +87,10 @@ paths:
       responses:
         '200':
           description: User reactivated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
 components:
   schemas:
     User:

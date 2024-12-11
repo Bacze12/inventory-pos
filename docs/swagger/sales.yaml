@@ -47,6 +47,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Sale'
+    patch:
+      summary: Update a sale by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSaleDto'
+      responses:
+        '200':
+          description: Sale updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+    delete:
+      summary: Delete a sale by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Sale deleted successfully
 components:
   schemas:
     Sale:
@@ -88,3 +120,10 @@ components:
           type: integer
         price:
           type: number
+    UpdateSaleDto:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SaleItemDto'

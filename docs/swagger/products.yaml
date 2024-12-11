@@ -7,6 +7,12 @@ paths:
   /products:
     get:
       summary: Retrieve all products
+      parameters:
+        - name: includeInactive
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: A list of products
@@ -79,10 +85,6 @@ paths:
       responses:
         '200':
           description: Product deleted successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Product'
 components:
   schemas:
     Product:
@@ -92,27 +94,81 @@ components:
           type: integer
         name:
           type: string
-        price:
+        purchasePrice:
           type: number
+        sellingPrice:
+          type: number
+        finalPrice:
+          type: number
+        marginPercent:
+          type: number
+        isIvaExempt:
+          type: boolean
+        isActive:
+          type: boolean
+        deletedAt:
+          type: string
+          format: date-time
         createdAt:
           type: string
           format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        Category:
+          $ref: '#/components/schemas/Category'
+        Supplier:
+          $ref: '#/components/schemas/Supplier'
+        PriceHistory:
+          type: array
+          items:
+            $ref: '#/components/schemas/PriceHistory'
+        Inventory:
+          type: array
+          items:
+            $ref: '#/components/schemas/Inventory'
     CreateProductDto:
       type: object
+      required:
+        - name
+        - purchasePrice
       properties:
-        id:
-          type: integer
         name:
           type: string
-        price:
+        purchasePrice:
           type: number
-        createdAt:
-          type: string
-          format: date-time
+        sellingPrice:
+          type: number
+        finalPrice:
+          type: number
+        marginPercent:
+          type: number
+        isIvaExempt:
+          type: boolean
+        isActive:
+          type: boolean
+        CategoryId:
+          type: integer
+        SupplierId:
+          type: integer
     UpdateProductDto:
       type: object
       properties:
         name:
           type: string
-        price:
+        purchasePrice:
           type: number
+        sellingPrice:
+          type: number
+        finalPrice:
+          type: number
+        marginPercent:
+          type: number
+        isIvaExempt:
+          type: boolean
+        isActive:
+          type: boolean
+        CategoryId:
+          type: integer
+        SupplierId:
+          type: integer

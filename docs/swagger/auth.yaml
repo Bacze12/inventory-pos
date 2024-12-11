@@ -16,6 +16,8 @@ paths:
       responses:
         '201':
           description: User registered successfully
+        '409':
+          description: Email already registered
         '400':
           description: Bad request
   /auth/login:
@@ -26,10 +28,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateAuthDto'
+              $ref: '#/components/schemas/LoginAuthDto'
       responses:
         '200':
           description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponseDto'
         '401':
           description: Unauthorized
 components:
@@ -47,3 +53,29 @@ components:
         password:
           type: string
           format: password
+    LoginAuthDto:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+    LoginResponseDto:
+      type: object
+      properties:
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+            email:
+              type: string
+              format: email
+            name:
+              type: string
+            role:
+              type: string
+        access_token:
+          type: string
