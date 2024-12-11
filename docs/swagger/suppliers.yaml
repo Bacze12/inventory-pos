@@ -1,0 +1,110 @@
+openapi: 3.0.0
+info:
+  title: Suppliers API
+  description: API for managing suppliers
+  version: 1.0.0
+paths:
+  /suppliers:
+    post:
+      summary: Create a new supplier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSupplierDto'
+      responses:
+        '201':
+          description: Supplier created successfully
+        '500':
+          description: Failed to create supplier
+    get:
+      summary: Retrieve all suppliers
+      responses:
+        '200':
+          description: Suppliers retrieved successfully
+        '500':
+          description: Failed to retrieve suppliers
+  /suppliers/{id}:
+    get:
+      summary: Retrieve a supplier by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Supplier retrieved successfully
+        '404':
+          description: Supplier not found
+        '500':
+          description: Failed to retrieve supplier
+    patch:
+      summary: Update a supplier
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSupplierDto'
+      responses:
+        '200':
+          description: Supplier updated successfully
+        '404':
+          description: Supplier not found
+        '500':
+          description: Failed to update supplier
+  /suppliers/{id}/active:
+    patch:
+      summary: Activate or deactivate a supplier
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isActive:
+                  type: boolean
+      responses:
+        '200':
+          description: Supplier status updated successfully
+        '404':
+          description: Supplier not found
+        '500':
+          description: Failed to update supplier status
+components:
+  schemas:
+    CreateSupplierDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nombre del proveedor
+        address:
+          type: string
+          description: Dirección del proveedor
+        phone:
+          type: string
+          description: Teléfono del proveedor
+        email:
+          type: string
+          description: Correo electrónico del proveedor
+        isActive:
+          type: boolean
+          description: Esta activo
+          default: true

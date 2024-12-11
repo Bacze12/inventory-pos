@@ -1,0 +1,126 @@
+swagger: '2.0'
+info:
+  description: API documentation for Categories
+  version: "1.0.0"
+  title: Categories API
+paths:
+  /categories:
+    post:
+      summary: Create a new category
+      description: ''
+      operationId: createCategory
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Category object that needs to be added
+          required: true
+          schema:
+            $ref: '#/definitions/CreateCategorieDto'
+      responses:
+        201:
+          description: Category created successfully
+    get:
+      summary: Retrieve all categories
+      description: ''
+      operationId: getCategories
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Successful operation
+  /categories/{id}:
+    get:
+      summary: Retrieve a category by ID
+      description: ''
+      operationId: getCategoryById
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID of category to return
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Successful operation
+        404:
+          description: Category not found
+    patch:
+      summary: Update a category
+      description: ''
+      operationId: updateCategory
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID of category to update
+          required: true
+          type: integer
+          format: int64
+        - in: body
+          name: body
+          description: Category object that needs to be updated
+          required: true
+          schema:
+            $ref: '#/definitions/CreateCategorieDto'
+      responses:
+        200:
+          description: Category updated successfully
+        404:
+          description: Category not found
+    patch:
+      summary: Activate or deactivate a category
+      description: ''
+      operationId: toggleCategoryStatus
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID of category to update status
+          required: true
+          type: integer
+          format: int64
+        - in: body
+          name: body
+          description: New status of the category
+          required: true
+          schema:
+            type: object
+            properties:
+              isActive:
+                type: boolean
+      responses:
+        200:
+          description: Category status updated successfully
+        404:
+          description: Category not found
+definitions:
+  CreateCategorieDto:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Nombre de la categoría
+      description:
+        type: string
+        description: Descripción de la categoría
+      isActive:
+        type: boolean
+        description: Esta activo
+        default: true
+      createdAt:
+        type: string
+        format: date-time
+        description: Fecha de creación
