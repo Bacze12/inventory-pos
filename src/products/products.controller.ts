@@ -52,4 +52,18 @@ export class ProductsController {
   public async remove(@Param('id') id: string) {
     return this.productsService.remove(+id);
   }
+
+  @Post('preview')
+@ApiOperation({ summary: 'Preview calculated product prices' })
+public async preview(@Body() createProductDto: CreateProductDto) {
+  const calculatedPrices = this.productsService.calculatePrices(
+    createProductDto.purchasePrice,
+    createProductDto.marginPercent,
+    createProductDto.isIvaExempt,
+    createProductDto.hasExtraTax,
+    createProductDto.extraTaxRate,
+  );
+  return calculatedPrices;
+}
+
 }

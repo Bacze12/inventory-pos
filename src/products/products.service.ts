@@ -7,7 +7,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 export class ProductsService {
   public constructor(private readonly prisma: PrismaService) {}
 
-  private calculatePrices(purchasePrice: number, marginPercent: number, isIvaExempt: boolean, hasExtraTax: boolean, extraTaxRate?: number) {
+  public calculatePrices(purchasePrice: number, marginPercent: number, isIvaExempt: boolean, hasExtraTax: boolean, extraTaxRate?: number) {
     // Calcular precio de venta base (con margen)
     const marginMultiplier = 1 + (marginPercent / 100);
     const sellingPrice = purchasePrice * marginMultiplier;
@@ -221,4 +221,5 @@ export class ProductsService {
       console.error(message, error);
     }
   }
+  
 }
