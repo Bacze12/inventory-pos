@@ -7,30 +7,82 @@ import { UpdateProductDto } from './dto/update-product.dto';
 export class ProductsService {
   public constructor(private readonly prisma: PrismaService) {}
 
+  private calculatePrices(purchasePrice: number, marginPercent: number, isIvaExempt: boolean, hasExtraTax: boolean, extraTaxRate?: number) {
+    // Calcular precio de venta base (con margen)
+    const marginMultiplier = 1 + (marginPercent / 100);
+    const sellingPrice = purchasePrice * marginMultiplier;
+    
+    // Calcular precio mínimo (con margen mínimo del 10%)
+    const minMarginMultiplier = 1 + 0.10; // 10% de margen mínimo
+    const minSellingPrice = purchasePrice * minMarginMultiplier;
+    
+    // Calcular precio con IVA
+    let finalPrice = sellingPrice;
+    if (!isIvaExempt) {
+      finalPrice *= 1.19; // 19% IVA
+    }
+    
+    // Añadir impuesto adicional si aplica
+    if (hasExtraTax && extraTaxRate) {
+      finalPrice *= (1 + (extraTaxRate / 100));
+    }
+
+    return {
+      sellingPrice: Number(sellingPrice.toFixed(2)),
+      minSellingPrice: Number(minSellingPrice.toFixed(2)),
+      finalPrice: Number(finalPrice.toFixed(2))
+    };
+  }
+
   public async create(createProductDto: CreateProductDto) {
     try {
-      // Calcular precios si no se proporcionan
+      const {
+        purchasePrice,
+        marginPercent,
+        isIvaExempt,
+        hasExtraTax,
+        extraTaxRate
+      } = createProductDto;
+
+      // Calcular todos los precios
+      const calculatedPrices = this.calculatePrices(
+        purchasePrice,
+        marginPercent,
+        isIvaExempt,
+        hasExtraTax,
+        extraTaxRate
+      );
+
+      // Crear el producto con todos los precios calculados
+      const { categoryId, supplierId, ...restData } = createProductDto;
       const data = {
-        ...createProductDto,
-        sellingPrice:
-          createProductDto.sellingPrice ||
-          createProductDto.purchasePrice *
-            (1 + (createProductDto.marginPercent || 0)),
-        finalPrice:
-          createProductDto.finalPrice ||
-          createProductDto.sellingPrice *
-            (createProductDto.isIvaExempt ? 1 : 1.19),
+        ...restData,
+        ...calculatedPrices,
+        Category: { connect: { id: categoryId } },
+        Supplier: { connect: { id: supplierId } }
       };
 
-      return await this.prisma.product.create({
+      const product = await this.prisma.product.create({
         data,
         include: {
           Category: true,
           Supplier: true,
         },
       });
+
+      // Registrar en el historial de precios
+      await this.prisma.priceHistory.create({
+        data: {
+          productId: product.id,
+          purchasePrice: purchasePrice,
+          sellingPrice: calculatedPrices.sellingPrice,
+          reason: 'Initial price setting',
+        },
+      });
+
+      return product;
     } catch (error) {
-      this.logError('Error creating product:', error);
+      console.error('Error creating product:', error);
       throw new HttpException(
         'Failed to create product',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -90,32 +142,53 @@ export class ProductsService {
 
   public async update(id: number, updateProductDto: UpdateProductDto) {
     try {
-      // Verificar si el producto existe
       const existingProduct = await this.prisma.product.findUnique({
         where: { id },
       });
-
+  
       if (!existingProduct) {
         throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
       }
-
-      // Si hay cambio en el precio, registrar en historial
-      if (updateProductDto.price !== existingProduct.price) {
+  
+      const { categoryId, supplierId, ...restData } = updateProductDto;
+      let updatedData: any = { ...restData };
+  
+      // Manejar las relaciones si se proporcionan
+      if (categoryId) {
+        updatedData.Category = { connect: { id: categoryId } };
+      }
+      if (supplierId) {
+        updatedData.Supplier = { connect: { id: supplierId } };
+      }
+  
+      // Recalcular precios si es necesario
+      if (updateProductDto.purchasePrice || updateProductDto.marginPercent) {
+        const calculatedPrices = this.calculatePrices(
+          updateProductDto.purchasePrice || existingProduct.purchasePrice,
+          updateProductDto.marginPercent || existingProduct.marginPercent,
+          updateProductDto.isIvaExempt ?? existingProduct.isIvaExempt,
+          updateProductDto.hasExtraTax ?? existingProduct.hasExtraTax,
+          updateProductDto.extraTaxRate ?? existingProduct.extraTaxRate
+        );
+  
+        updatedData = {
+          ...updatedData,
+          ...calculatedPrices
+        };
+  
         await this.prisma.priceHistory.create({
           data: {
             productId: id,
-            purchasePrice:
-              updateProductDto.purchasePrice || existingProduct.purchasePrice,
-            sellingPrice:
-              updateProductDto.sellingPrice || existingProduct.sellingPrice,
+            purchasePrice: updatedData.purchasePrice,
+            sellingPrice: calculatedPrices.sellingPrice,
             reason: 'Price update',
           },
         });
       }
-
+  
       return await this.prisma.product.update({
         where: { id },
-        data: updateProductDto,
+        data: updatedData,
         include: {
           Category: true,
           Supplier: true,
