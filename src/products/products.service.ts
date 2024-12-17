@@ -36,50 +36,56 @@ export class ProductsService {
 
   public async create(createProductDto: CreateProductDto) {
     try {
-      const {
-        purchasePrice,
-        marginPercent,
-        isIvaExempt,
-        hasExtraTax,
-        extraTaxRate
-      } = createProductDto;
-
-      // Calcular todos los precios
-      const calculatedPrices = this.calculatePrices(
-        purchasePrice,
-        marginPercent,
-        isIvaExempt,
-        hasExtraTax,
-        extraTaxRate
-      );
-
-      // Crear el producto con todos los precios calculados
       const { categoryId, supplierId, ...restData } = createProductDto;
-      const data = {
-        ...restData,
-        ...calculatedPrices,
-        Category: { connect: { id: categoryId } },
-        Supplier: { connect: { id: supplierId } }
-      };
-
+  
+      // Verificar que existan Category y Supplier
+      const category = await this.prisma.category.findUnique({
+        where: { id: categoryId },
+      });
+      if (!category) {
+        throw new HttpException('Category not found', HttpStatus.BAD_REQUEST);
+      }
+  
+      const supplier = await this.prisma.supplier.findUnique({
+        where: { id: supplierId },
+      });
+      if (!supplier) {
+        throw new HttpException('Supplier not found', HttpStatus.BAD_REQUEST);
+      }
+  
+      // Calcular los precios
+      const calculatedPrices = this.calculatePrices(
+        createProductDto.purchasePrice,
+        createProductDto.marginPercent,
+        createProductDto.isIvaExempt,
+        createProductDto.hasExtraTax,
+        createProductDto.extraTaxRate,
+      );
+  
+      // Crear el producto
       const product = await this.prisma.product.create({
-        data,
+        data: {
+          ...restData,
+          ...calculatedPrices,
+          Category: { connect: { id: categoryId } },
+          Supplier: { connect: { id: supplierId } },
+        },
         include: {
           Category: true,
           Supplier: true,
         },
       });
-
-      // Registrar en el historial de precios
+  
+      // Registrar historial de precios
       await this.prisma.priceHistory.create({
         data: {
           productId: product.id,
-          purchasePrice: purchasePrice,
+          purchasePrice: createProductDto.purchasePrice,
           sellingPrice: calculatedPrices.sellingPrice,
           reason: 'Initial price setting',
         },
       });
-
+  
       return product;
     } catch (error) {
       console.error('Error creating product:', error);
@@ -89,6 +95,7 @@ export class ProductsService {
       );
     }
   }
+  
 
   public async findAll(includeInactive: boolean = false) {
     try {

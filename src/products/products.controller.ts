@@ -7,6 +7,8 @@ import {
   Patch,
   Delete,
   Query,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -19,11 +21,15 @@ export class ProductsController {
   public constructor(private readonly productsService: ProductsService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create a new product' })
-  @ApiResponse({ status: 201, description: 'Product created successfully' })
-  public async create(@Body() createProductDto: CreateProductDto) {
-    return this.productsService.create(createProductDto);
+@ApiOperation({ summary: 'Create a new product' })
+@ApiResponse({ status: 201, description: 'Product created successfully' })
+public async create(@Body() createProductDto: CreateProductDto) {
+  if (!createProductDto.categoryId || !createProductDto.supplierId) {
+    throw new HttpException('CategoryId y SupplierId son obligatorios', HttpStatus.BAD_REQUEST);
   }
+  return this.productsService.create(createProductDto);
+}
+
 
   @Get()
   @ApiOperation({ summary: 'Retrieve all products' })

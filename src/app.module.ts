@@ -9,9 +9,12 @@ import { AppService } from './app.service';
 import { SupplierModule } from './suppliers/suppliers.module';
 import { CategoriesModule } from './categories/categories.module';
 import { InventoryModule } from './inventory/inventory.module';
-
+import { CashDrawerModule } from './cash-drawer/cash-drawer.module';
+import { PriceHistoryModule } from './price-history/price-history.module';
+import { profitabilityModule } from './product-profitability/product-profitability.module';
+import { ShiftModule } from './shift/shift.module';
 @Module({
-  imports: [AuthModule, PrismaModule, UsersModule, ProductsModule, SalesModule, SupplierModule, CategoriesModule, InventoryModule],
+  imports: [AuthModule, PrismaModule, UsersModule, ProductsModule, SalesModule, SupplierModule, CategoriesModule, InventoryModule, CashDrawerModule, PriceHistoryModule, profitabilityModule, ShiftModule],
   controllers: [AppController],
   providers: [AppService],
 })
