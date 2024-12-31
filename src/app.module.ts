@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { UsersModule } from './users/users.module';
@@ -13,9 +13,16 @@ import { CashDrawerModule } from './cash-drawer/cash-drawer.module';
 import { PriceHistoryModule } from './price-history/price-history.module';
 import { profitabilityModule } from './product-profitability/product-profitability.module';
 import { ShiftModule } from './shift/shift.module';
+import { JwtAuthMiddleware } from './middleware/jwtAuthMiddleware';
+import { SchemaMiddleware } from './middleware/schemaMiddleware';
+import { DashboardController } from './controllers/dashboard.controller';
 @Module({
   imports: [AuthModule, PrismaModule, UsersModule, ProductsModule, SalesModule, SupplierModule, CategoriesModule, InventoryModule, CashDrawerModule, PriceHistoryModule, profitabilityModule, ShiftModule],
-  controllers: [AppController],
+  controllers: [AppController, DashboardController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  public configure(consumer: MiddlewareConsumer) {
+    consumer.apply(JwtAuthMiddleware, SchemaMiddleware).forRoutes('*');
+  }
+}
