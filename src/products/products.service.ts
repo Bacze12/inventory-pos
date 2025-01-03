@@ -81,6 +81,9 @@ export class ProductsService {
         return product;
     } catch (error) {
         console.error('Error creating product:', error);
+        if (error instanceof HttpException) {
+            throw error;
+        }
         throw new HttpException('Failed to create product', HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
@@ -193,7 +196,10 @@ export class ProductsService {
       });
     } catch (error) {
       this.logError('Error updating product:', error);
-      throw error;
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Failed to update product', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

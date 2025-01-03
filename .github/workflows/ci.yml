@@ -40,9 +40,27 @@ jobs:
       - name: Build Project
         run: npm run build
 
-      - name: Trigger Render Deploy Hook
+      - name: Run Code Coverage
+        run: npm run test:cov
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage-report
+          path: coverage
+
+      - name: Deploy to Staging
         if: github.ref == 'refs/heads/main'
         run: |
           curl -X POST \
             -H "Content-Type: application/json" \
-            ${{ secrets.RENDER_DEPLOY_HOOK }}
+            ${{ secrets.RENDER_DEPLOY_HOOK_STAGING }}
+
+      - name: Deploy to Production
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            ${{ secrets.RENDER_DEPLOY_HOOK_PRODUCTION }}
