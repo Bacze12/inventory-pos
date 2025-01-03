@@ -7,8 +7,9 @@ export class CashDrawerService {
   public constructor(private readonly prisma: PrismaService) {}
 
   public async create(data: CreateCashDrawerDto) {
-    return this.prisma.cashDrawer.create({ data });
+    return this.prisma.cashDrawer.create({ data: { ...data, shiftId: String(data.shiftId) } });
   }
+  
 
   public async findAll() {
     return this.prisma.cashDrawer.findMany();

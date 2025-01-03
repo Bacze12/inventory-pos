@@ -7,7 +7,17 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import { User, UserRole } from '@prisma/client';
+import { UserRole } from '@prisma/client';
+
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  password: string;
+  role: UserRole;
+  isActive: boolean;
+  createdAt: Date;
+}
 
 @Injectable()
 export class AuthService {
@@ -54,7 +64,7 @@ export class AuthService {
 
   public async getUserRoles(userId: string): Promise<UserRole> {
     const user = await this.prisma.user.findUnique({
-      where: { id: parseInt(userId) },
+      where: { id: userId },
     });
 
     if (!user) {

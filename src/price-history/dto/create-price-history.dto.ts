@@ -4,8 +4,8 @@ import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 export class CreatePriceHistoryDto {
   @ApiProperty({ description: 'ID del producto' })
   @IsNotEmpty()
-  @IsNumber()
-  public productId: number;
+  @IsString()
+  public productId: string;
 
   @ApiProperty({ description: 'Precio de compra' })
   @IsNotEmpty()

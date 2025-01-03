@@ -36,7 +36,7 @@ export class SuppliersController {
     @Param('id') id: string,
     @Body() updateSupplierDto: Partial<CreateSupplierDto>,
   ) {
-    return this.suppliersService.update(Number(id), updateSupplierDto);
+    return this.suppliersService.update(String(id), updateSupplierDto);
   }
 
   @Get(':id')
@@ -44,7 +44,7 @@ export class SuppliersController {
   @ApiResponse({ status: 200, description: 'Supplier retrieved successfully' })
   @ApiResponse({ status: 404, description: 'Supplier not found' })
   public async findOne(@Param('id') id: string) {
-    return this.suppliersService.findOne(Number(id));
+    return this.suppliersService.findOne(String(id));
   }
 
   @Patch(':id/active')
@@ -55,6 +55,6 @@ export class SuppliersController {
     @Param('id') id: string,
     @Body('isActive') isActive: boolean,
   ) {
-    return this.suppliersService.toggleActiveStatus(Number(id), isActive);
+    return this.suppliersService.toggleActiveStatus(String(id), isActive);
   }
 }

@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsDate, IsOptional, IsEnum } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsDate, IsOptional, IsEnum, IsString } from 'class-validator';
 import { ShiftStatus } from '@prisma/client';
 
 export class CreateShiftDto {
   @ApiProperty({ description: 'ID del usuario asociado al turno' })
   @IsNotEmpty()
-  @IsNumber()
-  public userId: number;
+  @IsString()
+  public userId: string;
 
   @ApiProperty({ description: 'Estado del turno', enum: ShiftStatus, default: ShiftStatus.OPEN })
   @IsEnum(ShiftStatus)

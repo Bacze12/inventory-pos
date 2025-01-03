@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
   Body,
   Query,
@@ -31,7 +30,7 @@ export class UsersController {
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Get user by ID' })
   @ApiResponse({ status: 200, type: UserDto })
-  public async findOne(@Param('id', ParseIntPipe) id: number) {
+  public async findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }
 
@@ -40,7 +39,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Update user' })
   @ApiResponse({ status: 200, type: UserDto })
   public async update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id' ) id: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
     return this.usersService.update(id, updateUserDto);
@@ -50,7 +49,7 @@ export class UsersController {
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Deactivate user' })
   @ApiResponse({ status: 200, type: UserDto })
-  public async deactivate(@Param('id', ParseIntPipe) id: number) {
+  public async deactivate(@Param('id') id: string) {
     return this.usersService.deactivate(id);
   }
 
@@ -58,7 +57,7 @@ export class UsersController {
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Reactivate user' })
   @ApiResponse({ status: 200, type: UserDto })
-  public async reactivate(@Param('id', ParseIntPipe) id: number) {
+  public async reactivate(@Param('id') id: string) {
     return this.usersService.reactivate(id);
   }
 }

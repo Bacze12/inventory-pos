@@ -40,7 +40,7 @@ export class UsersService {
   /**
    * Retrieves a single user by ID.
    */
-  public async findOne(id: number): Promise<Partial<User>> {
+  public async findOne(id: string): Promise<Partial<User>> {
     const user = await this.prisma.user.findUnique({
       where: { id },
       select: {
@@ -68,7 +68,7 @@ export class UsersService {
   /**
    * Updates a user's information.
    */
-  public async update(id: number, data: UpdateUserDto): Promise<Partial<User>> {
+  public async update(id: string, data: UpdateUserDto): Promise<Partial<User>> {
     try {
       // Verificar si el usuario existe
       await this.findOne(id);
@@ -102,7 +102,7 @@ export class UsersService {
   /**
    * Deactivates a user.
    */
-  public async deactivate(id: number): Promise<Partial<User>> {
+  public async deactivate(id: string): Promise<Partial<User>> {
     await this.findOne(id);
     return this.prisma.user.update({
       where: { id },
@@ -114,7 +114,7 @@ export class UsersService {
   /**
    * Reactivates a user.
    */
-  public async reactivate(id: number): Promise<Partial<User>> {
+  public async reactivate(id: string): Promise<Partial<User>> {
     await this.findOne(id);
     return this.prisma.user.update({
       where: { id },

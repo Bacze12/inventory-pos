@@ -1,6 +1,7 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateCategorieDto } from './dto/create-categorie.dto';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Prisma } from '@prisma/client';
 
 @Injectable()
@@ -9,7 +10,7 @@ export class CategoriesService {
 
   public async create(createCategoryDto: CreateCategorieDto) {
     try {
-      const data: Prisma.CategoryCreateInput = {
+      const data = {
         name: createCategoryDto.name,
         description: createCategoryDto.description,
         isActive: createCategoryDto.isActive ?? true, // Establece un valor predeterminado
@@ -41,10 +42,10 @@ export class CategoriesService {
     console.error(message, error);
   }
 
-  public async findOne(id: number) {
+  public async findOne(id: string) {
     try {
       const category = await this.prisma.category.findUnique({
-        where: { id },
+        where: { id: id },
       });
   
       if (!category) {
@@ -62,10 +63,10 @@ export class CategoriesService {
   }
   
 
-  public async update(id: number, updateCategoryDto: Partial<CreateCategorieDto>) {
+  public async update(id: string, updateCategoryDto: Partial<CreateCategorieDto>) {
     try {
       const existingCategory = await this.prisma.category.findUnique({
-        where: { id },
+        where: { id: id },
       });
 
       if (!existingCategory) {
@@ -89,10 +90,10 @@ export class CategoriesService {
     }
   }
 
-  public async remove(id: number) {
+  public async remove(id: string) {
     try {
       return await this.prisma.category.delete({
-        where: { id },
+        where: { id:id },
       });
     } catch (error) {
       this.logError('Error deleting category:', error);
@@ -103,10 +104,10 @@ export class CategoriesService {
     }
   }
 
-  public async toggleActiveStatus(id: number, isActive: boolean) {
+  public async toggleActiveStatus(id: string, isActive: boolean) {
     try {
       const existingCategory = await this.prisma.category.findUnique({
-        where: { id },
+        where: { id: id },
       });
   
       if (!existingCategory) {

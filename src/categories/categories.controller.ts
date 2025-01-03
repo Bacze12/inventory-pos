@@ -33,7 +33,7 @@ export class CategoriesController {
   @ApiResponse({ status: 200, description: 'Category retrieved successfully' })
   @ApiResponse({ status: 404, description: 'Category not found' })
   public async findOne(@Param('id') id: string) {
-    return this.categoriesService.findOne(Number(id));
+    return this.categoriesService.findOne(String(id));
   }
 
   @Patch(':id')
@@ -44,7 +44,7 @@ export class CategoriesController {
     @Param('id') id: string,
     @Body() updateSupplierDto: Partial<CreateCategorieDto>,
   ) {
-    return this.categoriesService.update(Number(id), updateSupplierDto);
+    return this.categoriesService.update(String(id), updateSupplierDto);
   }
 
   @Patch(':id/active')
@@ -55,6 +55,6 @@ export class CategoriesController {
     @Param('id') id: string,
     @Body('isActive') isActive: boolean, // Recibe el nuevo estado
   ) {
-    return this.categoriesService.toggleActiveStatus(Number(id), isActive);
+    return this.categoriesService.toggleActiveStatus(String(id), isActive);
   }
 }

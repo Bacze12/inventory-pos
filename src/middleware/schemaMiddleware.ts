@@ -6,8 +6,8 @@ export class SchemaMiddleware implements NestMiddleware {
     public constructor(private readonly prisma: PrismaService) {}
 
     public async use(req: any, res: any, next: () => void) {
-        const schema = `client_${req.clientId}`;
-        await this.prisma.$executeRawUnsafe(`SET search_path TO ${schema}`);
+        req.schema = `client_${req.clientId}`; // Almacena el esquema como parte del objeto `req`.
         next();
-    }
+      }
+      
 }
