@@ -1,6 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
-import { PrismaModule } from '../prisma/prisma.module';
+import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
 import { ProductsModule } from './products/products.module';
 import { SalesModule } from './sales/sales.module';
@@ -17,7 +17,20 @@ import { JwtAuthMiddleware } from './middleware/jwtAuthMiddleware';
 import { SchemaMiddleware } from './middleware/schemaMiddleware';
 import { DashboardController } from './controllers/dashboard.controller';
 @Module({
-  imports: [AuthModule, PrismaModule, UsersModule, ProductsModule, SalesModule, SupplierModule, CategoriesModule, InventoryModule, CashDrawerModule, PriceHistoryModule, profitabilityModule, ShiftModule],
+  imports: [
+    AuthModule,
+    MongooseModule.forRoot('mongodb://localhost/nest'),
+    UsersModule,
+    ProductsModule,
+    SalesModule,
+    SupplierModule,
+    CategoriesModule,
+    InventoryModule,
+    CashDrawerModule,
+    PriceHistoryModule,
+    profitabilityModule,
+    ShiftModule,
+  ],
   controllers: [AppController, DashboardController],
   providers: [AppService],
 })

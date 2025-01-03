@@ -30,7 +30,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         '200':
           description: User details
@@ -38,6 +38,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
     patch:
       summary: Update a user by ID
       parameters:
@@ -45,7 +47,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
       requestBody:
         required: true
         content:
@@ -59,6 +61,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
   /users/{id}/deactivate:
     patch:
       summary: Deactivate a user by ID
@@ -67,7 +71,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         '200':
           description: User deactivated
@@ -75,6 +79,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
   /users/{id}/reactivate:
     patch:
       summary: Reactivate a user by ID
@@ -83,7 +89,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         '200':
           description: User reactivated
@@ -91,13 +97,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
 components:
   schemas:
     User:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         email:
           type: string
           format: email
@@ -107,6 +115,12 @@ components:
           type: string
         isActive:
           type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
     UpdateUser:
       type: object
       properties:
@@ -117,3 +131,5 @@ components:
           type: string
         role:
           type: string
+        isActive:
+          type: boolean

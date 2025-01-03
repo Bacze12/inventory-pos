@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreateSaleDto } from './dto/create-sale.dto';
+import { Sale, SaleDocument } from './schemas/sale.schema';
 
 @Injectable()
 export class SalesService {
-  public constructor(private readonly prisma: PrismaService) {}
+  public constructor(
+    @InjectModel(Sale.name) private readonly saleModel: Model<SaleDocument>,
+  ) {}
 
   /**
    * Creates a new sale.
@@ -18,14 +22,12 @@ export class SalesService {
       0,
     );
 
-    return this.prisma.sale.create({
-      data: {
-        total,
-        items: {
-          create: createSaleDto.items,
-        },
-      },
+    const createdSale = new this.saleModel({
+      total,
+      items: createSaleDto.items,
     });
+
+    return createdSale.save();
   }
 
   /**
@@ -34,11 +36,7 @@ export class SalesService {
    * @returns An array of all sales.
    */
   public async findAll() {
-    return this.prisma.sale.findMany({
-      include: {
-        items: true,
-      },
-    });
+    return this.saleModel.find().populate('items').exec();
   }
 
   /**
@@ -48,11 +46,6 @@ export class SalesService {
    * @returns The sale with the specified ID.
    */
   public async findOne(id: string) {
-    return this.prisma.sale.findUnique({
-      where: { id },
-      include: {
-        items: true,
-      },
-    });
+    return this.saleModel.findById(id).populate('items').exec();
   }
 }

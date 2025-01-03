@@ -39,7 +39,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         '200':
           description: A single sale
@@ -47,6 +47,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Sale'
+        '404':
+          description: Sale not found
     patch:
       summary: Update a sale by ID
       parameters:
@@ -54,7 +56,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
       requestBody:
         required: true
         content:
@@ -68,6 +70,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Sale'
+        '404':
+          description: Sale not found
     delete:
       summary: Delete a sale by ID
       parameters:
@@ -75,17 +79,19 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         '204':
           description: Sale deleted successfully
+        '404':
+          description: Sale not found
 components:
   schemas:
     Sale:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         total:
           type: number
         createdAt:
@@ -106,7 +112,7 @@ components:
       type: object
       properties:
         productId:
-          type: integer
+          type: string
         quantity:
           type: integer
         price:
@@ -115,7 +121,7 @@ components:
       type: object
       properties:
         productId:
-          type: integer
+          type: string
         quantity:
           type: integer
         price:

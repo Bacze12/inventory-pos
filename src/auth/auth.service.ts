@@ -3,26 +3,18 @@ import {
   UnauthorizedException,
   ConflictException,
 } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UserRole } from '@prisma/client';
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  password: string;
-  role: UserRole;
-  isActive: boolean;
-  createdAt: Date;
-}
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { User, UserDocument } from './schemas/user.schema';
 
 @Injectable()
 export class AuthService {
   public constructor(
-    private readonly prisma: PrismaService,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -30,7 +22,7 @@ export class AuthService {
     email: string,
     password: string,
   ): Promise<Omit<User, 'password'> | null> {
-    const user = await this.prisma.user.findUnique({ where: { email } });
+    const user = await this.userModel.findOne({ email }).exec();
 
     if (!user || !user.isActive) {
       return null;
@@ -38,7 +30,7 @@ export class AuthService {
 
     if (await bcrypt.compare(password, user.password)) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password: _, ...result } = user;
+      const { password: _, ...result } = user.toObject();
       return result;
     }
     return null;
@@ -63,9 +55,7 @@ export class AuthService {
   }
 
   public async getUserRoles(userId: string): Promise<UserRole> {
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-    });
+    const user = await this.userModel.findById(userId).exec();
 
     if (!user) {
       throw new UnauthorizedException('User not found');
@@ -78,9 +68,7 @@ export class AuthService {
     const { email, password, role, name } = createAuthDto;
 
     // Verificar si el usuario ya existe
-    const existingUser = await this.prisma.user.findUnique({
-      where: { email },
-    });
+    const existingUser = await this.userModel.findOne({ email }).exec();
 
     if (existingUser) {
       throw new ConflictException('Email already registered');
@@ -89,25 +77,24 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     try {
-      const user = await this.prisma.user.create({
-        data: {
-          email,
-          password: hashedPassword,
-          role,
-          name,
-          isActive: true,
-        },
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          role: true,
-          createdAt: true,
-          isActive: true,
-        },
+      const user = new this.userModel({
+        email,
+        password: hashedPassword,
+        role,
+        name,
+        isActive: true,
       });
 
-      return user;
+      await user.save();
+
+      return {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        createdAt: user.createdAt,
+        isActive: user.isActive,
+      };
     } catch {
       throw new Error('Could not register user');
     }

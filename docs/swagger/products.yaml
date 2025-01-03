@@ -45,7 +45,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         '200':
           description: A single product
@@ -53,6 +53,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
     patch:
       summary: Update a product
       parameters:
@@ -60,7 +62,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
       requestBody:
         required: true
         content:
@@ -74,6 +76,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
     delete:
       summary: Delete a product
       parameters:
@@ -81,17 +85,19 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         '200':
           description: Product deleted successfully
+        '404':
+          description: Product not found
 components:
   schemas:
     Product:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         name:
           type: string
         purchasePrice:
@@ -132,25 +138,30 @@ components:
       required:
         - name
         - purchasePrice
+        - marginPercent
+        - categoryId
+        - supplierId
       properties:
         name:
           type: string
         purchasePrice:
           type: number
-        sellingPrice:
-          type: number
-        finalPrice:
-          type: number
         marginPercent:
+          type: number
+        sku:
+          type: string
+        hasExtraTax:
+          type: boolean
+        extraTaxRate:
           type: number
         isIvaExempt:
           type: boolean
-        isActive:
-          type: boolean
-        CategoryId:
-          type: integer
-        SupplierId:
-          type: integer
+        stock:
+          type: number
+        categoryId:
+          type: string
+        supplierId:
+          type: string
     UpdateProductDto:
       type: object
       properties:
@@ -158,17 +169,19 @@ components:
           type: string
         purchasePrice:
           type: number
-        sellingPrice:
-          type: number
-        finalPrice:
-          type: number
         marginPercent:
+          type: number
+        sku:
+          type: string
+        hasExtraTax:
+          type: boolean
+        extraTaxRate:
           type: number
         isIvaExempt:
           type: boolean
-        isActive:
-          type: boolean
-        CategoryId:
-          type: integer
-        SupplierId:
-          type: integer
+        stock:
+          type: number
+        categoryId:
+          type: string
+        supplierId:
+          type: string

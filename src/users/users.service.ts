@@ -3,13 +3,16 @@ import {
   NotFoundException,
   ConflictException,
 } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { UpdateUserDto } from './dto/user.dto';
-import { User } from '@prisma/client';
+import { User, UserDocument } from './schemas/user.schema';
 
 @Injectable()
 export class UsersService {
-  public constructor(private readonly prisma: PrismaService) {}
+  public constructor(
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+  ) {}
 
   private readonly userSelect = {
     id: true,
@@ -26,43 +29,37 @@ export class UsersService {
    * Retrieves all users with optional filtering.
    */
   public async findAll(isActive?: boolean) {
-    return this.prisma.user.findMany({
-      where: {
+    return this.userModel.find(
+      {
         isActive: isActive !== undefined ? isActive : undefined,
       },
-      select: this.userSelect,
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+      this.userSelect,
+    ).sort({ createdAt: -1 }).exec();
   }
 
   /**
    * Retrieves a single user by ID.
    */
   public async findOne(id: string): Promise<Partial<User>> {
-    const user = await this.prisma.user.findUnique({
-      where: { id },
-      select: {
-        ...this.userSelect,
-        shifts: {
-          select: {
-            id: true,
-            startTime: true,
-            endTime: true,
-            status: true,
-          },
-          take: 5,
-          orderBy: { startTime: 'desc' },
+    const user = await this.userModel.findById(id, {
+      ...this.userSelect,
+      shifts: {
+        $slice: 5,
+        $sort: { startTime: -1 },
+        $project: {
+          id: 1,
+          startTime: 1,
+          endTime: 1,
+          status: 1,
         },
       },
-    });
+    }).exec();
 
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
 
-    return user;
+    return user.toObject();
   }
 
   /**
@@ -75,19 +72,14 @@ export class UsersService {
 
       // Si se está actualizando el email, verificar que no exista
       if (data.email) {
-        const existingUser = await this.prisma.user.findUnique({
-          where: { email: data.email },
-        });
+        const existingUser = await this.userModel.findOne({ email: data.email }).exec();
         if (existingUser && existingUser.id !== id) {
           throw new ConflictException('Email already in use');
         }
       }
 
-      return await this.prisma.user.update({
-        where: { id },
-        data,
-        select: this.userSelect,
-      });
+      const updatedUser = await this.userModel.findByIdAndUpdate(id, data, { new: true, select: this.userSelect }).exec();
+      return updatedUser.toObject();
     } catch (error) {
       if (
         error instanceof NotFoundException ||
@@ -104,11 +96,8 @@ export class UsersService {
    */
   public async deactivate(id: string): Promise<Partial<User>> {
     await this.findOne(id);
-    return this.prisma.user.update({
-      where: { id },
-      data: { isActive: false },
-      select: this.userSelect,
-    });
+    const updatedUser = await this.userModel.findByIdAndUpdate(id, { isActive: false }, { new: true, select: this.userSelect }).exec();
+    return updatedUser.toObject();
   }
 
   /**
@@ -116,10 +105,7 @@ export class UsersService {
    */
   public async reactivate(id: string): Promise<Partial<User>> {
     await this.findOne(id);
-    return this.prisma.user.update({
-      where: { id },
-      data: { isActive: true },
-      select: this.userSelect,
-    });
+    const updatedUser = await this.userModel.findByIdAndUpdate(id, { isActive: true }, { new: true, select: this.userSelect }).exec();
+    return updatedUser.toObject();
   }
 }

@@ -1,21 +1,22 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Inventory, InventoryDocument } from './schemas/inventory.schema';
+import { Product, ProductDocument } from './schemas/product.schema';
 
 @Injectable()
 export class InventoryService {
-  public constructor(private readonly prisma: PrismaService) {}
+  public constructor(
+    @InjectModel(Inventory.name) private readonly inventoryModel: Model<InventoryDocument>,
+    @InjectModel(Product.name) private readonly productModel: Model<ProductDocument>,
+  ) {}
 
   public async findAll() {
-    return this.prisma.inventory.findMany({
-      include: { product: true },
-    });
+    return this.inventoryModel.find().populate('product').exec();
   }
 
   public async findOne(id: string) {
-    const inventory = await this.prisma.inventory.findUnique({
-      where: { id },
-      include: { product: true },
-    });
+    const inventory = await this.inventoryModel.findById(id).populate('product').exec();
 
     if (!inventory) {
       throw new NotFoundException('Inventory item not found');
@@ -25,85 +26,62 @@ export class InventoryService {
   }
 
   public async create(data: { productId: string; quantity: number; type: 'IN' | 'OUT'; notes?: string }) {
-    const product = await this.prisma.product.findUnique({
-        where: { id: data.productId },
-    });
+    const product = await this.productModel.findById(data.productId).exec();
 
     if (!product) {
-        throw new NotFoundException('Product not found');
+      throw new NotFoundException('Product not found');
     }
 
     const updatedStock = data.type === 'IN' ? product.stock + data.quantity : product.stock - data.quantity;
 
     if (updatedStock < 0) {
-        throw new NotFoundException('Stock cannot be negative');
+      throw new NotFoundException('Stock cannot be negative');
     }
 
-    await this.prisma.product.update({
-        where: { id: data.productId },
-        data: { stock: updatedStock },
-    });
+    await this.productModel.findByIdAndUpdate(data.productId, { stock: updatedStock }).exec();
 
-    return this.prisma.inventory.create({
-        data,
-    });
-}
+    const createdInventory = new this.inventoryModel(data);
+    return createdInventory.save();
+  }
 
   public async getProductWithInventory(productId: string) {
-    return this.prisma.product.findUnique({
-      where: { id: productId },
-      include: { inventory: true },
-    });
+    return this.productModel.findById(productId).populate('inventory').exec();
   }
-  
 
   public async update(id: string, data: { quantity?: number; type?: 'IN' | 'OUT'; notes?: string }) {
-    const inventory = await this.prisma.inventory.findUnique({ where: { id } });
-  
+    const inventory = await this.inventoryModel.findById(id).exec();
+
     if (!inventory) {
       throw new NotFoundException('Inventory item not found');
     }
-  
+
     if (data.quantity && data.type) {
-      const product = await this.prisma.product.findUnique({
-        where: { id: inventory.productId },
-      });
-  
+      const product = await this.productModel.findById(inventory.productId).exec();
+
       if (!product) {
         throw new NotFoundException('Product not found');
       }
-  
-      const updatedStock =
-        data.type === 'IN'
-          ? product.stock + data.quantity
-          : product.stock - data.quantity;
-  
+
+      const updatedStock = data.type === 'IN' ? product.stock + data.quantity : product.stock - data.quantity;
+
       if (updatedStock < 0) {
         throw new NotFoundException('Stock cannot be negative');
       }
-  
-      await this.prisma.product.update({
-        where: { id: inventory.productId },
-        data: { stock: updatedStock },
-      });
+
+      await this.productModel.findByIdAndUpdate(inventory.productId, { stock: updatedStock }).exec();
     }
-  
-    return this.prisma.inventory.update({
-      where: { id },
-      data,
-    });
+
+    return this.inventoryModel.findByIdAndUpdate(id, data, { new: true }).exec();
   }
-  
-  
 
   public async remove(id: string) {
-    const inventory = await this.prisma.inventory.findUnique({ where: { id } });
+    const inventory = await this.inventoryModel.findById(id).exec();
 
     if (!inventory) {
       throw new NotFoundException('Inventory item not found');
     }
 
-    return this.prisma.inventory.delete({ where: { id } });
+    return this.inventoryModel.findByIdAndDelete(id).exec();
   }
 
   public async registerMovement({
@@ -117,10 +95,7 @@ export class InventoryService {
     type: 'IN' | 'OUT';
     notes?: string;
   }) {
-    const product = await this.prisma.product.findFirst({
-        where: { sku },
-      });
-      
+    const product = await this.productModel.findOne({ sku }).exec();
 
     if (!product) {
       throw new NotFoundException('Product with the given SKU not found');
@@ -132,18 +107,14 @@ export class InventoryService {
       throw new NotFoundException('Stock cannot be negative');
     }
 
-    await this.prisma.product.update({
-      where: { id: product.id },
-      data: { stock: updatedStock },
-    });
+    await this.productModel.findByIdAndUpdate(product.id, { stock: updatedStock }).exec();
 
-    return this.prisma.inventory.create({
-      data: {
-        productId: product.id,
-        quantity,
-        type,
-        notes,
-      },
+    const createdInventory = new this.inventoryModel({
+      productId: product.id,
+      quantity,
+      type,
+      notes,
     });
+    return createdInventory.save();
   }
 }

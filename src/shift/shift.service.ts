@@ -1,16 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreateShiftDto } from './dto/create-shift.dto';
+import { Shift, ShiftDocument } from './schemas/shift.schema';
 
 @Injectable()
 export class ShiftService {
-  public constructor(private readonly prisma: PrismaService) {}
+  public constructor(
+    @InjectModel(Shift.name) private readonly shiftModel: Model<ShiftDocument>,
+  ) {}
 
   public async create(data: CreateShiftDto) {
-    return this.prisma.shift.create({ data });
+    const createdShift = new this.shiftModel(data);
+    return createdShift.save();
   }
 
   public async findAll() {
-    return this.prisma.shift.findMany();
+    return this.shiftModel.find().exec();
   }
 }

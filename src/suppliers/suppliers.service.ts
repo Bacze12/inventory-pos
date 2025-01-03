@@ -1,28 +1,24 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreateSupplierDto } from './dto/create-supplier.dto';
-import { Prisma } from '@prisma/client';
+import { Supplier, SupplierDocument } from './schemas/supplier.schema';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('Suppliers')
 @Injectable()
 export class SuppliersService {
-  public constructor(private readonly prisma: PrismaService) {}
+  public constructor(
+    @InjectModel(Supplier.name) private readonly supplierModel: Model<SupplierDocument>,
+  ) {}
 
   @ApiOperation({ summary: 'Create a new supplier' })
   @ApiResponse({ status: 201, description: 'Supplier created successfully' })
   @ApiResponse({ status: 500, description: 'Failed to create supplier' })
   public async create(createSupplierDto: CreateSupplierDto) {
     try {
-      const data: Prisma.SupplierCreateInput = {
-        name: createSupplierDto.name,
-        address: createSupplierDto.address,
-        phone: createSupplierDto.phone,
-        email: createSupplierDto.email,
-        isActive: createSupplierDto.isActive ?? true, // Establece un valor predeterminado
-        updatedAt: new Date(), // Asigna explícitamente la fecha actual
-      };
-      return await this.prisma.supplier.create({ data });
+      const createdSupplier = new this.supplierModel(createSupplierDto);
+      return createdSupplier.save();
     } catch (error) {
       this.logError('Error creating supplier:', error);
       throw new HttpException(
@@ -31,14 +27,13 @@ export class SuppliersService {
       );
     }
   }
-  
 
   @ApiOperation({ summary: 'Retrieve all suppliers' })
   @ApiResponse({ status: 200, description: 'Suppliers retrieved successfully' })
   @ApiResponse({ status: 500, description: 'Failed to retrieve suppliers' })
   public async findAll() {
     try {
-      return await this.prisma.supplier.findMany();
+      return this.supplierModel.find().exec();
     } catch (error) {
       this.logError('Error retrieving suppliers:', error);
       throw new HttpException(
@@ -58,22 +53,18 @@ export class SuppliersService {
   @ApiResponse({ status: 500, description: 'Failed to update supplier' })
   public async update(id: string, updateSupplierDto: Partial<CreateSupplierDto>) {
     try {
-      const existingSupplier = await this.prisma.supplier.findUnique({
-        where: { id },
-      });
-  
+      const existingSupplier = await this.supplierModel.findById(id).exec();
+
       if (!existingSupplier) {
         throw new HttpException('Supplier not found', HttpStatus.NOT_FOUND);
       }
-  
-      const updatedSupplier = await this.prisma.supplier.update({
-        where: { id },
-        data: {
-          ...updateSupplierDto,
-          updatedAt: new Date(), // Actualiza la fecha de modificación
-        },
-      });
-  
+
+      const updatedSupplier = await this.supplierModel.findByIdAndUpdate(
+        id,
+        { ...updateSupplierDto, updatedAt: new Date() },
+        { new: true },
+      ).exec();
+
       return updatedSupplier;
     } catch (error) {
       this.logError('Error updating supplier:', error);
@@ -83,7 +74,6 @@ export class SuppliersService {
       );
     }
   }
-  
 
   @ApiOperation({ summary: 'Retrieve a supplier by ID' })
   @ApiResponse({ status: 200, description: 'Supplier retrieved successfully' })
@@ -91,14 +81,12 @@ export class SuppliersService {
   @ApiResponse({ status: 500, description: 'Failed to retrieve supplier' })
   public async findOne(id: string) {
     try {
-      const supplier = await this.prisma.supplier.findUnique({
-        where: { id },
-      });
-  
+      const supplier = await this.supplierModel.findById(id).exec();
+
       if (!supplier) {
         throw new HttpException('Supplier not found', HttpStatus.NOT_FOUND);
       }
-  
+
       return supplier;
     } catch (error) {
       this.logError('Error retrieving supplier:', error);
@@ -108,29 +96,25 @@ export class SuppliersService {
       );
     }
   }
-  
+
   @ApiOperation({ summary: 'Activate or deactivate a supplier' })
   @ApiResponse({ status: 200, description: 'Supplier status updated successfully' })
   @ApiResponse({ status: 404, description: 'Supplier not found' })
   @ApiResponse({ status: 500, description: 'Failed to update supplier status' })
   public async toggleActiveStatus(id: string, isActive: boolean) {
     try {
-      const existingSupplier = await this.prisma.supplier.findUnique({
-        where: { id },
-      });
-  
+      const existingSupplier = await this.supplierModel.findById(id).exec();
+
       if (!existingSupplier) {
         throw new HttpException('Supplier not found', HttpStatus.NOT_FOUND);
       }
-  
-      const updatedSupplier = await this.prisma.supplier.update({
-        where: { id },
-        data: {
-          isActive,
-          updatedAt: new Date(),
-        },
-      });
-  
+
+      const updatedSupplier = await this.supplierModel.findByIdAndUpdate(
+        id,
+        { isActive, updatedAt: new Date() },
+        { new: true },
+      ).exec();
+
       return updatedSupplier;
     } catch (error) {
       this.logError('Error updating supplier status:', error);
@@ -140,6 +124,4 @@ export class SuppliersService {
       );
     }
   }
-  
-  
 }
