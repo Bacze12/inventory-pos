@@ -11,5 +11,13 @@ module.exports = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1'
   },
+  setupFilesAfterEnv: ['<rootDir>/../test/setup.ts'],
+  testPathIgnorePatterns: ['/node_modules/', '/dist/'],
+  coveragePathIgnorePatterns: ['/node_modules/', '/dist/', '/test/'],
+  reporters: [
+    'default',
+    ['jest-junit', { outputDirectory: './test-results/junit' }],
+    ['jest-html-reporters', { publicPath: './test-results/html', filename: 'report.html' }]
+  ],
+  coverageReporters: ['json', 'lcov', 'text', 'clover']
 }
-

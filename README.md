@@ -202,3 +202,19 @@ We welcome contributions from the community! If you'd like to contribute to this
 ### License
 
 This project is licensed under the MIT License. See the `LICENSE` file for more details.
+
+### Swagger Documentation
+
+To access the Swagger documentation for this project, follow these steps:
+
+1. **Start the application**:
+   ```bash
+   npm run start:dev
+   ```
+
+2. **Open your browser and navigate to**:
+   ```
+   http://localhost:3000/api
+   ```
+
+The Swagger documentation provides detailed information about the available API endpoints, request/response formats, and authentication requirements.

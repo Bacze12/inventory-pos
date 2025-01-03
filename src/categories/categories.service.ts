@@ -19,6 +19,11 @@ export class CategoriesService {
       return await this.prisma.category.create({ data });
     } catch (error) {
       this.logError('Error creating category:', error);
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          throw new HttpException('Category already exists', HttpStatus.CONFLICT);
+        }
+      }
       throw new HttpException(
         'Failed to create category',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -83,6 +88,11 @@ export class CategoriesService {
       return updatedCategory;
     } catch (error) {
       this.logError('Error updating category:', error);
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          throw new HttpException('Category already exists', HttpStatus.CONFLICT);
+        }
+      }
       throw new HttpException(
         'Failed to update category',
         HttpStatus.INTERNAL_SERVER_ERROR,
