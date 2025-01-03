@@ -3,192 +3,164 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  isActive  Boolean  @default(true)
-  role      UserRole @default(CASHIER)
-  Sale      Sale[]
-  shifts    Shift[]
-
-  @@index([email])
-  @@index([role])
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  email          String   @unique
+  name           String
+  password       String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  isActive       Boolean  @default(true)
+  role           UserRole @default(CASHIER)
+  ecommerceUserId String?
+  sales          Sale[]
+  shifts         Shift[]
 }
 
 model Product {
-  id                   Int                    @id @default(autoincrement())
+  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
   name                 String
-  createdAt            DateTime               @default(now())
-  categoryId           Int?
+  createdAt            DateTime @default(now())
+  categoryId           String?  @db.ObjectId
   deletedAt            DateTime?
   extraTaxRate         Float?
   finalPrice           Float?
-  hasExtraTax          Boolean                @default(false)
-  isActive             Boolean                @default(true)
-  isIvaExempt          Boolean                @default(false)
+  hasExtraTax          Boolean  @default(false)
+  isActive             Boolean  @default(true)
+  isIvaExempt          Boolean  @default(false)
   marginPercent        Float?
   minSellingPrice      Float?
   purchasePrice        Float?
   sellingPrice         Float?
   sku                  String?
-  stock                Int                    @default(0)
-  supplierId           Int?
-  updatedAt            DateTime               @default(now())
-  Inventory            Inventory[]
-  PriceHistory         PriceHistory[]
-  Category             Category?              @relation(fields: [categoryId], references: [id])
-  Supplier             Supplier?              @relation(fields: [supplierId], references: [id])
-  ProductProfitability ProductProfitability[]
+  stock                Int      @default(0)
+  supplierId           String?  @db.ObjectId
+  updatedAt            DateTime @default(now())
+  inventory            Inventory[]
+  priceHistory         PriceHistory[]
+  category             Category? @relation(fields: [categoryId], references: [id])
+  supplier             Supplier? @relation(fields: [supplierId], references: [id])
+  productProfitability ProductProfitability[]
   saleItems            SaleItem[]
+}
 
-  @@index([categoryId])
-  @@index([isActive, deletedAt])
-  @@index([name])
-  @@index([sku])
-  @@index([supplierId])
+model Tenant {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  ecommerceUserId String   @unique
+  schemaName     String   @unique
+  createdAt      DateTime @default(now())
 }
 
 model Sale {
-  id            Int           @id @default(autoincrement())
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
   total         Float
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
   extraTaxTotal Float?
   ivaAmount     Float?
   paymentMethod PaymentMethod @default(CASH)
   subtotal      Float?
-  userId        Int?
-  User          User?         @relation(fields: [userId], references: [id])
+  userId        String?  @db.ObjectId
+  user          User?    @relation(fields: [userId], references: [id])
   items         SaleItem[]
-  shiftId       Int?
-  shift         Shift?        @relation(fields: [shiftId], references: [id])
-
-  @@index([shiftId])
-  @@index([createdAt])
-  @@index([userId, createdAt])
-  @@index([userId])
+  shiftId       String?  @db.ObjectId
+  shift         Shift?   @relation(fields: [shiftId], references: [id])
 }
 
 model SaleItem {
-  id             Int     @id @default(autoincrement())
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
   quantity       Int
   price          Float
-  saleId         Int
-  productId      Int
+  saleId         String   @db.ObjectId
+  productId      String   @db.ObjectId
   basePrice      Float?
   extraTaxAmount Float?
   ivaAmount      Float?
   totalPrice     Float?
-  product        Product @relation(fields: [productId], references: [id])
-  sale           Sale    @relation(fields: [saleId], references: [id])
-
-  @@index([productId])
-  @@index([saleId])
+  product        Product  @relation(fields: [productId], references: [id])
+  sale           Sale     @relation(fields: [saleId], references: [id])
 }
 
 model Category {
-  id          Int       @id @default(autoincrement())
-  name        String    @unique
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
   description String?
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  Product     Product[]
-
-  @@index([isActive])
-  @@index([name])
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  products    Product[]
 }
 
 model Inventory {
-  id        Int                   @id @default(autoincrement())
-  productId Int
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  productId String   @db.ObjectId
   quantity  Int
   type      InventoryMovementType @default(IN)
-  date      DateTime              @default(now())
+  date      DateTime @default(now())
   notes     String?
-  Product   Product               @relation(fields: [productId], references: [id])
-
-  @@index([date])
-  @@index([productId, date])
-  @@index([productId])
+  product   Product   @relation(fields: [productId], references: [id])
 }
 
 model PriceHistory {
-  id            Int      @id @default(autoincrement())
-  productId     Int
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  productId     String   @db.ObjectId
   date          DateTime @default(now())
   purchasePrice Float
   sellingPrice  Float
   reason        String?
-  Product       Product  @relation(fields: [productId], references: [id])
-
-  @@index([productId, date])
+  product       Product   @relation(fields: [productId], references: [id])
 }
 
 model ProductProfitability {
-  id         Int      @id @default(autoincrement())
-  productId  Int
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  productId  String   @db.ObjectId
   date       DateTime @default(now())
   costPrice  Float
   sellPrice  Float
   margin     Float
   marginRate Float
-  Product    Product  @relation(fields: [productId], references: [id])
-
-  @@index([productId, date])
+  product    Product   @relation(fields: [productId], references: [id])
 }
 
 model Supplier {
-  id        Int       @id @default(autoincrement())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
-  email     String    @unique
+  email     String   @unique
   phone     String
   address   String
-  isActive  Boolean   @default(true)
-  createdAt DateTime  @default(now())
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
   updatedAt DateTime
-  Product   Product[]
-
-  @@index([email])
-  @@index([isActive])
-  @@index([name])
+  products  Product[]
 }
+
 model Shift {
-  id          Int       @id @default(autoincrement())
-  startTime   DateTime  @default(now())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  startTime   DateTime @default(now())
   endTime     DateTime?
-  userId      Int
+  userId      String   @db.ObjectId
   status      ShiftStatus @default(OPEN)
   initialCash Float
   finalCash   Float?
   notes       String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   user        User      @relation(fields: [userId], references: [id])
   cashDrawer  CashDrawer[]
   sales       Sale[]
-
-  @@index([userId])
-  @@index([status])
 }
 
 model CashDrawer {
-  id          Int           @id @default(autoincrement())
-  shiftId     Int
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  shiftId     String   @db.ObjectId
   type        MovementType
   amount      Float
   reason      String?
-  createdAt   DateTime      @default(now())
-  shift       Shift         @relation(fields: [shiftId], references: [id])
-
-  @@index([shiftId])
+  createdAt   DateTime @default(now())
+  shift       Shift     @relation(fields: [shiftId], references: [id])
 }
 
 enum ShiftStatus {

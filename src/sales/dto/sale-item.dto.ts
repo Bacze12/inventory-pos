@@ -8,5 +8,5 @@ export class SaleItemDto {
   public price: number;
 
   @ApiProperty({ description: 'ID del producto asociado', example: 1 })
-  public productId: number;
+  public productId: string;
 }

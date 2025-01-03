@@ -56,7 +56,7 @@ export class SuppliersService {
   @ApiResponse({ status: 200, description: 'Supplier updated successfully' })
   @ApiResponse({ status: 404, description: 'Supplier not found' })
   @ApiResponse({ status: 500, description: 'Failed to update supplier' })
-  public async update(id: number, updateSupplierDto: Partial<CreateSupplierDto>) {
+  public async update(id: string, updateSupplierDto: Partial<CreateSupplierDto>) {
     try {
       const existingSupplier = await this.prisma.supplier.findUnique({
         where: { id },
@@ -89,7 +89,7 @@ export class SuppliersService {
   @ApiResponse({ status: 200, description: 'Supplier retrieved successfully' })
   @ApiResponse({ status: 404, description: 'Supplier not found' })
   @ApiResponse({ status: 500, description: 'Failed to retrieve supplier' })
-  public async findOne(id: number) {
+  public async findOne(id: string) {
     try {
       const supplier = await this.prisma.supplier.findUnique({
         where: { id },
@@ -113,7 +113,7 @@ export class SuppliersService {
   @ApiResponse({ status: 200, description: 'Supplier status updated successfully' })
   @ApiResponse({ status: 404, description: 'Supplier not found' })
   @ApiResponse({ status: 500, description: 'Failed to update supplier status' })
-  public async toggleActiveStatus(id: number, isActive: boolean) {
+  public async toggleActiveStatus(id: string, isActive: boolean) {
     try {
       const existingSupplier = await this.prisma.supplier.findUnique({
         where: { id },

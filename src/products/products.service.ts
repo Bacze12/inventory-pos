@@ -36,65 +36,55 @@ export class ProductsService {
 
   public async create(createProductDto: CreateProductDto) {
     try {
-      const { categoryId, supplierId, ...restData } = createProductDto;
-  
-      // Verificar que existan Category y Supplier
-      const category = await this.prisma.category.findUnique({
-        where: { id: categoryId },
-      });
-      if (!category) {
-        throw new HttpException('Category not found', HttpStatus.BAD_REQUEST);
-      }
-  
-      const supplier = await this.prisma.supplier.findUnique({
-        where: { id: supplierId },
-      });
-      if (!supplier) {
-        throw new HttpException('Supplier not found', HttpStatus.BAD_REQUEST);
-      }
-  
-      // Calcular los precios
-      const calculatedPrices = this.calculatePrices(
-        createProductDto.purchasePrice,
-        createProductDto.marginPercent,
-        createProductDto.isIvaExempt,
-        createProductDto.hasExtraTax,
-        createProductDto.extraTaxRate,
-      );
-  
-      // Crear el producto
-      const product = await this.prisma.product.create({
-        data: {
-          ...restData,
-          ...calculatedPrices,
-          Category: { connect: { id: categoryId } },
-          Supplier: { connect: { id: supplierId } },
-        },
-        include: {
-          Category: true,
-          Supplier: true,
-        },
-      });
-  
-      // Registrar historial de precios
-      await this.prisma.priceHistory.create({
-        data: {
-          productId: product.id,
-          purchasePrice: createProductDto.purchasePrice,
-          sellingPrice: calculatedPrices.sellingPrice,
-          reason: 'Initial price setting',
-        },
-      });
-  
-      return product;
+        const { categoryId, supplierId, ...restData } = createProductDto;
+
+        const category = await this.prisma.category.findUnique({
+            where: { id: String(categoryId) },
+        });
+        if (!category) {
+            throw new HttpException('Category not found', HttpStatus.BAD_REQUEST);
+        }
+
+        const supplier = await this.prisma.supplier.findUnique({
+            where: { id: String(supplierId) },
+        });
+        if (!supplier) {
+            throw new HttpException('Supplier not found', HttpStatus.BAD_REQUEST);
+        }
+
+        const calculatedPrices = this.calculatePrices(
+            createProductDto.purchasePrice,
+            createProductDto.marginPercent,
+            createProductDto.isIvaExempt,
+            createProductDto.hasExtraTax,
+            createProductDto.extraTaxRate,
+        );
+
+        const product = await this.prisma.product.create({
+            data: {
+                ...restData,
+                ...calculatedPrices,
+                categoryId: String(categoryId),
+                supplierId: String(supplierId),
+            },
+        });
+
+        await this.prisma.priceHistory.create({
+            data: {
+                productId: String(product.id),
+                purchasePrice: createProductDto.purchasePrice,
+                sellingPrice: calculatedPrices.sellingPrice,
+                reason: 'Initial price setting',
+            },
+        });
+
+        return product;
     } catch (error) {
-      console.error('Error creating product:', error);
-      throw new HttpException(
-        'Failed to create product',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+        console.error('Error creating product:', error);
+        throw new HttpException('Failed to create product', HttpStatus.INTERNAL_SERVER_ERROR);
     }
-  }
+}
+
   
 
   public async findAll(includeInactive: boolean = false) {
@@ -105,8 +95,8 @@ export class ProductsService {
           deletedAt: null,
         },
         include: {
-          Category: true,
-          Supplier: true,
+          category: true,
+          supplier: true,
         },
       });
     } catch (error) {
@@ -118,18 +108,18 @@ export class ProductsService {
     }
   }
 
-  public async findOne(id: number) {
+  public async findOne(id: string) {
     try {
       const product = await this.prisma.product.findUnique({
         where: { id },
         include: {
-          Category: true,
-          Supplier: true,
-          PriceHistory: {
+          category: true,
+          supplier: true,
+          priceHistory: {
             orderBy: { date: 'desc' },
             take: 5,
           },
-          Inventory: {
+          inventory: {
             orderBy: { date: 'desc' },
             take: 5,
           },
@@ -147,7 +137,7 @@ export class ProductsService {
     }
   }
 
-  public async update(id: number, updateProductDto: UpdateProductDto) {
+  public async update(id: string, updateProductDto: UpdateProductDto) {
     try {
       const existingProduct = await this.prisma.product.findUnique({
         where: { id },
@@ -197,8 +187,8 @@ export class ProductsService {
         where: { id },
         data: updatedData,
         include: {
-          Category: true,
-          Supplier: true,
+          category: true,
+          supplier: true,
         },
       });
     } catch (error) {
@@ -207,7 +197,7 @@ export class ProductsService {
     }
   }
 
-  public async remove(id: number) {
+  public async remove(id: string) {
     try {
       // Soft delete
       return await this.prisma.product.update({

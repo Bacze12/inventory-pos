@@ -7,14 +7,14 @@ export class InventoryService {
 
   public async findAll() {
     return this.prisma.inventory.findMany({
-      include: { Product: true },
+      include: { product: true },
     });
   }
 
-  public async findOne(id: number) {
+  public async findOne(id: string) {
     const inventory = await this.prisma.inventory.findUnique({
       where: { id },
-      include: { Product: true },
+      include: { product: true },
     });
 
     if (!inventory) {
@@ -24,39 +24,40 @@ export class InventoryService {
     return inventory;
   }
 
-  public async create(data: { productId: number; quantity: number; type: 'IN' | 'OUT'; notes?: string }) {
+  public async create(data: { productId: string; quantity: number; type: 'IN' | 'OUT'; notes?: string }) {
     const product = await this.prisma.product.findUnique({
-      where: { id: data.productId },
+        where: { id: data.productId },
     });
-  
+
     if (!product) {
-      throw new NotFoundException('Product not found');
+        throw new NotFoundException('Product not found');
     }
-  
+
     const updatedStock = data.type === 'IN' ? product.stock + data.quantity : product.stock - data.quantity;
-  
+
     if (updatedStock < 0) {
-      throw new NotFoundException('Stock cannot be negative');
+        throw new NotFoundException('Stock cannot be negative');
     }
-  
+
     await this.prisma.product.update({
-      where: { id: data.productId },
-      data: { stock: updatedStock },
+        where: { id: data.productId },
+        data: { stock: updatedStock },
     });
-  
+
     return this.prisma.inventory.create({
-      data,
+        data,
     });
-  }
-  public async getProductWithInventory(productId: number) {
+}
+
+  public async getProductWithInventory(productId: string) {
     return this.prisma.product.findUnique({
       where: { id: productId },
-      include: { Inventory: true },
+      include: { inventory: true },
     });
   }
   
 
-  public async update(id: number, data: { quantity?: number; type?: 'IN' | 'OUT'; notes?: string }) {
+  public async update(id: string, data: { quantity?: number; type?: 'IN' | 'OUT'; notes?: string }) {
     const inventory = await this.prisma.inventory.findUnique({ where: { id } });
   
     if (!inventory) {
@@ -95,7 +96,7 @@ export class InventoryService {
   
   
 
-  public async remove(id: number) {
+  public async remove(id: string) {
     const inventory = await this.prisma.inventory.findUnique({ where: { id } });
 
     if (!inventory) {

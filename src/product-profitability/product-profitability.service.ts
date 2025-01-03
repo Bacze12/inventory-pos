@@ -7,7 +7,7 @@ export class ProductProfitabilityService {
   public constructor(private readonly prisma: PrismaService) {}
 
   public async create(data: CreateProductProfitabilityDto) {
-    return this.prisma.productProfitability.create({ data });
+    return this.prisma.productProfitability.create({ data:{...data, productId:String(data.productId),}, });
   }
 
   public async findAll() {

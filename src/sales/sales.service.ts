@@ -47,7 +47,7 @@ export class SalesService {
    * @param id - The ID of the sale.
    * @returns The sale with the specified ID.
    */
-  public async findOne(id: number) {
+  public async findOne(id: string) {
     return this.prisma.sale.findUnique({
       where: { id },
       include: {

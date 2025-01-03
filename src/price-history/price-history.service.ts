@@ -7,7 +7,7 @@ export class PriceHistoryService {
   public constructor(private readonly prisma: PrismaService) {}
 
   public async create(data: CreatePriceHistoryDto) {
-    return this.prisma.priceHistory.create({ data });
+    return this.prisma.priceHistory.create({ data: { ...data, productId: String(data.productId),},});
   }
 
   public async findAll() {

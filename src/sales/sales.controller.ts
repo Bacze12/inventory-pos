@@ -45,6 +45,6 @@ export class SalesController {
   @Get(':id')
   @ApiOperation({ summary: 'Retrieve a sale by ID' })
   public async findOne(@Param('id') id: string) {
-    return this.salesService.findOne(+id);
+    return this.salesService.findOne(id);
   }
 }

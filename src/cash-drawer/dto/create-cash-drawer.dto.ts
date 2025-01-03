@@ -5,8 +5,8 @@ import { MovementType } from '@prisma/client';
 export class CreateCashDrawerDto {
   @ApiProperty({ description: 'ID del turno asociado al movimiento' })
   @IsNotEmpty()
-  @IsNumber()
-  public shiftId: number;
+  @IsString()
+  public shiftId: string;
 
   @ApiProperty({ description: 'Tipo de movimiento', enum: MovementType })
   @IsNotEmpty()

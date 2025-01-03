@@ -27,10 +27,8 @@ import {
     @Get(':id')
     public async findOne(@Param('id') id: string) {
       try {
-        const parsedId = Number(id);
-        if (isNaN(parsedId)) {
-          throw new HttpException('Invalid ID', HttpStatus.BAD_REQUEST);
-        }
+        const parsedId = String(id);
+        
         return await this.inventoryService.findOne(parsedId);
       } catch (error) {
         if (error instanceof HttpException) {
@@ -61,10 +59,8 @@ import {
     @Patch(':id')
     public async update(@Param('id') id: string, @Body() body: any) {
       try {
-        const parsedId = Number(id);
-        if (isNaN(parsedId)) {
-          throw new HttpException('Invalid ID', HttpStatus.BAD_REQUEST);
-        }
+        const parsedId = String(id);
+        
         return await this.inventoryService.update(parsedId, body);
       } catch (error) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
@@ -74,10 +70,8 @@ import {
     @Delete(':id')
     public async remove(@Param('id') id: string) {
       try {
-        const parsedId = Number(id);
-        if (isNaN(parsedId)) {
-          throw new HttpException('Invalid ID', HttpStatus.BAD_REQUEST);
-        }
+        const parsedId = String(id);
+       
         return await this.inventoryService.remove(parsedId);
       } catch (error) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
